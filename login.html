@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cultur'All | Entrar</title>
+  <meta name="description" content="Inicie sessão na sua conta Cultur'All." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="script.js"></script>
+</head>
+<body class="login-page">
+  <main class="login-page-shell">
+    <a class="auth-brand" href="index.html" aria-label="Cultur'All início">Cultur'All</a>
+
+    <section class="auth-card" aria-labelledby="loginTitle">
+      <h1 id="loginTitle">Bem-vindo</h1>
+      <p class="auth-subtitle">Inicie sessão na sua conta</p>
+
+      <form id="loginForm" class="auth-form" novalidate>
+        <label for="emailInput">Email</label>
+        <input id="emailInput" name="email" type="email" placeholder="seu@email.com" autocomplete="username" required />
+
+        <label for="passwordInput">Palavra-passe</label>
+        <input id="passwordInput" name="password" type="password" placeholder="••••••••" autocomplete="current-password" required />
+
+        <button class="login-submit" type="submit">
+          <svg viewBox="0 0 24 24"><path d="M10 17l5-5-5-5"></path><path d="M15 12H4"></path></svg>
+          Entrar
+        </button>
+      </form>
+
+      <p class="auth-message" id="authMessage" role="status" aria-live="polite"></p>
+
+      <div class="test-accounts">
+        <p class="test-accounts-title">Contas de teste:</p>
+        <div class="test-account-card">
+          <strong>Utilizador (lambda):</strong> maria@example.com
+          <span>Palavra-passe: user123</span>
+        </div>
+        <div class="test-account-card">
+          <strong>Organizador:</strong> joao@example.com
+          <span>Palavra-passe: org123</span>
+        </div>
+      </div>
+
+      <button class="back-home-btn" id="backHomeBtn" type="button">Voltar à página inicial</button>
+    </section>
+  </main>
+</body>
+</html>
