@@ -65,24 +65,31 @@
               </button>
               <div class="filters-backdrop" id="filtersBackdrop" hidden></div>
               <div class="filters-grid" id="filtersGrid" aria-label="Filtros de eventos">
-              <div class="filter-group">
+              <div class="filter-group date-filter-group">
                 <label for="categoryFilter">
                   <svg viewBox="0 0 24 24"><path d="M4 6h16"></path><path d="M6 6l4 6-4 6"></path></svg>
                   Categoria
                 </label>
                 <select id="categoryFilter">
                   <option value="Todos">Todos</option>
-                  <option value="Música">Música</option>
-                  <option value="Teatro">Teatro</option>
                   <option value="Arte e Exposições">Arte e Exposições</option>
+                  <option value="Bem Estar">Bem Estar</option>
+                  <option value="Cinema">Cinema</option>
+                  <option value="Comédia">Comédia</option>
+                  <option value="Concertos">Concertos</option>
                   <option value="Dança">Dança</option>
                   <option value="Festivais">Festivais</option>
                   <option value="Gastronomia">Gastronomia</option>
-                  <option value="Cinema">Cinema</option>
+                  <option value="Literatura">Literatura</option>
+                  <option value="Mercados e Feiras">Mercados e Feiras</option>
+                  <option value="Moda">Moda</option>
+                  <option value="Outros">Outros</option>
+                  <option value="Para Famílias">Para Famílias</option>
+                  <option value="Teatro">Teatro</option>
                 </select>
               </div>
 
-              <div class="filter-group">
+              <div class="filter-group date-filter-group">
                 <label for="dateFilter">
                   <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"></rect><path d="M8 3v4"></path><path d="M16 3v4"></path><path d="M4 9h16"></path></svg>
                   Data
@@ -92,7 +99,20 @@
                   <option value="Hoje">Hoje</option>
                   <option value="Esta semana">Esta semana</option>
                   <option value="Este mês">Este mês</option>
+                  <option value="Passados">Passados</option>
+                  <option value="Periódicos">Periódicos</option>
+                  <option value="Escolher data">Escolher data</option>
                 </select>
+                <div class="date-custom-controls" id="dateCustomControls" hidden aria-hidden="true">
+                  <label for="datePickerInput">Escolhe a data</label>
+                  <div class="date-picker-row">
+                    <input id="datePickerInput" class="date-picker-input" type="date" />
+                    <button id="openDatePickerBtn" class="date-picker-trigger-btn" type="button" aria-label="Abrir calendário">
+                      <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"></rect><path d="M8 3v4"></path><path d="M16 3v4"></path><path d="M4 9h16"></path></svg>
+                    </button>
+                  </div>
+                  <button id="applyDateBtn" class="apply-date-btn" type="button">Aplicar</button>
+                </div>
               </div>
 
               <div class="filter-group">
@@ -102,10 +122,35 @@
                 </label>
                 <select id="locationFilter">
                   <option value="Todos">Todos</option>
-                  <option value="Lisboa">Lisboa</option>
-                  <option value="Porto">Porto</option>
-                  <option value="Alentejo">Alentejo</option>
+                  <option value="Aveiro">Aveiro</option>
+                  <option value="Beja">Beja</option>
+                  <option value="Braga">Braga</option>
+                  <option value="Bragança">Bragança</option>
+                  <option value="Castelo Branco">Castelo Branco</option>
+                  <option value="Chaves">Chaves</option>
                   <option value="Coimbra">Coimbra</option>
+                  <option value="Covilhã">Covilhã</option>
+                  <option value="Évora">Évora</option>
+                  <option value="Faro">Faro</option>
+                  <option value="Figueira da Foz">Figueira da Foz</option>
+                  <option value="Funchal">Funchal</option>
+                  <option value="Guarda">Guarda</option>
+                  <option value="Guimarães">Guimarães</option>
+                  <option value="Lagos">Lagos</option>
+                  <option value="Leiria">Leiria</option>
+                  <option value="Lisboa">Lisboa</option>
+                  <option value="Loures">Loures</option>
+                  <option value="Maia">Maia</option>
+                  <option value="Oeiras">Oeiras</option>
+                  <option value="Ponta Delgada">Ponta Delgada</option>
+                  <option value="Porto">Porto</option>
+                  <option value="Santarém">Santarém</option>
+                  <option value="Setúbal">Setúbal</option>
+                  <option value="Tavira">Tavira</option>
+                  <option value="Viana do Castelo">Viana do Castelo</option>
+                  <option value="Vila Nova de Gaia">Vila Nova de Gaia</option>
+                  <option value="Vila Real">Vila Real</option>
+                  <option value="Viseu">Viseu</option>
                 </select>
               </div>
 
@@ -129,7 +174,16 @@
               <h1 id="sectionTitle">Mais Populares</h1>
               <p><span id="resultsCount">0</span> <span id="resultsLabel">eventos encontrados</span></p>
             </div>
-            <div class="view-chip" id="viewChip">Ordenado por visualizações</div>
+            <div class="section-head-actions">
+              <label class="sort-field" for="sortFilter">
+                <span>Ordenar por</span>
+                <select id="sortFilter" aria-label="Ordenar eventos">
+                  <option value="views">Visualizações</option>
+                  <option value="proximity">Proximidade</option>
+                  <option value="date">Data</option>
+                </select>
+              </label>
+            </div>
           </section>
 
           <section class="cards-grid" id="cardsGrid" aria-live="polite"></section>

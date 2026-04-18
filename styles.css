@@ -350,12 +350,154 @@ select {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
+.date-filter-group {
+  position: relative;
+  overflow: visible;
+}
+
+.date-custom-controls {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  z-index: 25;
+  display: grid;
+  gap: 12px;
+  width: min(100%, 360px);
+  padding: 16px;
+  border: 1px solid rgba(174, 145, 112, 0.18);
+  border-radius: 16px;
+  background: #fcf8f2;
+  box-shadow: var(--shadow);
+}
+
+.date-custom-controls[hidden] {
+  display: none;
+}
+
+.date-custom-controls label {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #6b5a4d;
+}
+
+.date-picker-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.date-picker-input {
+  width: 100%;
+  height: 40px;
+  border: 1px solid rgba(174, 145, 112, 0.18);
+  border-radius: 10px;
+  background: rgba(239, 226, 209, 0.96);
+  color: var(--text);
+  padding: 0 12px;
+  outline: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.date-picker-input::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
+.date-picker-input::-webkit-inner-spin-button {
+  display: none;
+}
+
+.date-picker-input::-webkit-clear-button {
+  display: none;
+}
+
+.date-picker-input::-moz-focus-inner {
+  border: 0;
+}
+
+.date-picker-trigger-btn {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(174, 145, 112, 0.18);
+  border-radius: 10px;
+  background: rgba(239, 226, 209, 0.96);
+  color: #da6241;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.date-picker-trigger-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.apply-date-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 12px;
+  padding: 11px 14px;
+  background: linear-gradient(180deg, #d3492a, #bf3c21);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 14px 30px rgba(191, 60, 33, 0.22);
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.apply-date-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 34px rgba(191, 60, 33, 0.28);
+}
+
 .section-head {
   display: flex;
   align-items: end;
   justify-content: space-between;
   gap: 20px;
   padding: 36px 0 22px;
+}
+
+.section-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.sort-field {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.95rem;
+  font-weight: 400;
+}
+
+.sort-field span {
+  color: #6b5a4d;
+  font-weight: 400;
+}
+
+.sort-field select {
+  min-width: 190px;
+  height: 40px;
+  border: 1px solid rgba(174, 145, 112, 0.18);
+  border-radius: 10px;
+  background: rgba(239, 226, 209, 0.96);
+  color: var(--text);
+  padding: 0 14px;
+  outline: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 .section-head h1 {
@@ -424,7 +566,8 @@ select {
 }
 
 .event-pill,
-.favorite-btn {
+.favorite-btn,
+.share-btn {
   position: absolute;
   z-index: 1;
   top: 10px;
@@ -453,6 +596,35 @@ select {
   color: #645242;
   box-shadow: 0 10px 18px rgba(0, 0, 0, 0.16);
   cursor: pointer;
+}
+
+.share-btn {
+  right: 48px;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.98);
+  color: #645242;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.16);
+  cursor: pointer;
+}
+
+.share-btn svg {
+  width: 15px;
+  height: 15px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.share-btn:hover,
+.favorite-btn:hover {
+  transform: translateY(-1px);
 }
 
 .favorite-btn.active {
@@ -848,6 +1020,47 @@ select {
   margin: 4px 0 0;
   color: var(--muted);
   font-size: 0.92rem;
+}
+
+.profile-location-box {
+  margin: 6px 0 18px;
+  display: grid;
+  gap: 10px;
+}
+
+.profile-location-box label {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #6b5a4d;
+}
+
+.profile-location-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.profile-location-row input {
+  height: 40px;
+  border: 1px solid rgba(174, 145, 112, 0.18);
+  border-radius: 10px;
+  background: rgba(239, 226, 209, 0.96);
+  color: var(--text);
+  padding: 0 12px;
+  outline: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.profile-location-row button {
+  height: 40px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #d3492a, #bf3c21);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 14px 30px rgba(191, 60, 33, 0.22);
+  cursor: pointer;
 }
 
 .profile-stat-grid {

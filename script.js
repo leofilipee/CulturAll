@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     {
       id: 'festival-fado-lisboa',
       title: 'Festival de Fado de Lisboa',
-      category: 'Música',
+      category: 'Concertos',
       dateLabel: '20 de março às 21:00',
       dateBucket: 'Este mês',
       eventDate: '2026-04-03T21:00:00',
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
       dateBucket: 'Esta semana',
       eventDate: '2026-03-18T12:00:00',
       location: 'Évora Centro Histórico, Alentejo',
-      city: 'Alentejo',
+      city: 'Évora',
       priceLabel: '€45',
       priceType: 'Pago',
       views: 377,
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     {
       id: 'noite-jazz-porto',
       title: 'Noite de Jazz no Porto',
-      category: 'Música',
+      category: 'Concertos',
       dateLabel: '25 de março às 22:00',
       dateBucket: 'Este mês',
       eventDate: '2026-04-15T22:00:00',
@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const organizerEvents = [
     {
       title: 'Festival de Fado de Lisboa',
-      category: 'Música',
+      category: 'Concertos',
       date: '20/03/2026',
       location: 'Centro Cultural de Belém',
       status: 'published',
@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     {
       title: 'Noite de Jazz no Porto',
-      category: 'Música',
+      category: 'Concertos',
       date: '25/03/2026',
       location: 'Hot Clube de Portugal',
       status: 'published',
@@ -231,10 +231,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const getEventDateTime = (event) => new Date(event.eventDate).getTime();
 
+  const getDateKey = (date) => {
+    const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+    return localDate.toISOString().slice(0, 10);
+  };
+
+  const addDaysToKey = (dateKey, daysToAdd) => {
+    const date = new Date(`${dateKey}T00:00:00`);
+    date.setDate(date.getDate() + daysToAdd);
+    return getDateKey(date);
+  };
+
+  const isSameMonth = (dateKey, referenceKey) => {
+    const date = new Date(`${dateKey}T00:00:00`);
+    const referenceDate = new Date(`${referenceKey}T00:00:00`);
+    return date.getFullYear() === referenceDate.getFullYear() && date.getMonth() === referenceDate.getMonth();
+  };
+
+  const isSameYear = (dateKey, referenceKey) => {
+    const date = new Date(`${dateKey}T00:00:00`);
+    const referenceDate = new Date(`${referenceKey}T00:00:00`);
+    return date.getFullYear() === referenceDate.getFullYear();
+  };
+
   const isUpcomingEvent = (event) => getEventDateTime(event) >= Date.now();
 
-  const getListingEvents = () => {
+  const getListingEvents = (includePastEvents = false) => {
     const upcomingEvents = events.filter(isUpcomingEvent);
+    const baseEvents = includePastEvents ? events : upcomingEvents;
 
     if (pageType === 'events') {
       return upcomingEvents.sort((firstEvent, secondEvent) => getEventDateTime(firstEvent) - getEventDateTime(secondEvent));
@@ -246,13 +270,16 @@ document.addEventListener('DOMContentLoaded', () => {
         .filter(Boolean);
     }
 
-    return upcomingEvents.sort((firstEvent, secondEvent) => secondEvent.views - firstEvent.views);
+    return baseEvents.sort((firstEvent, secondEvent) => secondEvent.views - firstEvent.views);
   };
 
   const buildEventCard = (event) => `
     <article class="event-card" data-event-id="${event.id}" data-category="${event.category}" data-date="${event.dateBucket}" data-location="${event.city}" data-price="${event.priceType}" data-title="${event.title.toLowerCase()}">
       <div class="event-media">
         <span class="event-pill">${event.category}</span>
+        <button class="share-btn" type="button" aria-label="Partilhar evento" data-event-id="${event.id}">
+          <svg viewBox="0 0 24 24"><path d="M16 8a3 3 0 1 0-2.83-4H13a3 3 0 0 0 3 4Zm-8 4a3 3 0 1 0-2.83-4H5a3 3 0 0 0 3 4Zm8 8a3 3 0 1 0-2.83-4H13a3 3 0 0 0 3 4Z"></path><path d="m7.5 9.5 8 4m-8 1 8-4"></path></svg>
+        </button>
         <button class="favorite-btn${isFavorite(event.id) ? ' active' : ''}" type="button" aria-label="${isFavorite(event.id) ? 'Remover dos favoritos' : 'Guardar evento'}" aria-pressed="${isFavorite(event.id) ? 'true' : 'false'}" data-event-id="${event.id}">
           <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.6-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.4-7 10-7 10Z"></path></svg>
         </button>
@@ -286,6 +313,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('searchInput');
     const categoryFilter = document.getElementById('categoryFilter');
     const dateFilter = document.getElementById('dateFilter');
+    const dateCustomControls = document.getElementById('dateCustomControls');
+    const datePickerInput = document.getElementById('datePickerInput');
+    const openDatePickerBtn = document.getElementById('openDatePickerBtn');
+    const applyDateBtn = document.getElementById('applyDateBtn');
+    const sortFilter = document.getElementById('sortFilter');
     const locationFilter = document.getElementById('locationFilter');
     const priceFilter = document.getElementById('priceFilter');
     const loginToggleBtn = document.getElementById('loginToggleBtn');
@@ -294,6 +326,42 @@ document.addEventListener('DOMContentLoaded', () => {
     const filtersToggleBtn = document.getElementById('filtersToggleBtn');
     const filtersBackdrop = document.getElementById('filtersBackdrop');
     const page = pageConfig[pageType] ?? pageConfig.home;
+    let appliedSpecificDate = '';
+    let dateControlsOpen = false;
+    const sortChipLabels = {
+      views: 'Ordenado por visualizações',
+      proximity: 'Ordenado por proximidade',
+      date: 'Ordenado por data'
+    };
+
+    const cityRegionMap = {
+      lisboa: 'centro-litoral',
+      loures: 'centro-litoral',
+      oeiras: 'centro-litoral',
+      porto: 'norte',
+      braga: 'norte',
+      guimaraes: 'norte',
+      'viana do castelo': 'norte',
+      'vila nova de gaia': 'norte',
+      'vila real': 'norte',
+      braganca: 'norte',
+      chaves: 'norte',
+      maia: 'norte',
+      aveiro: 'centro',
+      coimbra: 'centro',
+      'figueira da foz': 'centro',
+      leiria: 'centro',
+      'castelo branco': 'centro',
+      covilha: 'centro',
+      guarda: 'centro',
+      evora: 'alentejo',
+      beja: 'alentejo',
+      faro: 'algarve',
+      lagos: 'algarve',
+      tavira: 'algarve',
+      funchal: 'madeira',
+      'ponta delgada': 'azores'
+    };
 
     if (sectionTitle) {
       sectionTitle.textContent = page.title;
@@ -306,6 +374,55 @@ document.addEventListener('DOMContentLoaded', () => {
     if (viewChip) {
       viewChip.textContent = page.chip;
     }
+
+    const getUserLocation = () => (getSession()?.location ?? '').trim().toLowerCase();
+
+    const normalizeLocation = (value) => value
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+      .toLowerCase();
+
+    const getRegionKey = (value) => {
+      const normalizedValue = normalizeLocation(value);
+      return Object.entries(cityRegionMap).find(([city]) => normalizedValue.includes(city))?.[1] ?? null;
+    };
+
+    const getProximityScore = (event, userLocation) => {
+      if (!userLocation) {
+        return Number.POSITIVE_INFINITY;
+      }
+
+      const normalizedUserLocation = normalizeLocation(userLocation);
+      const eventLocationText = normalizeLocation(`${event.city} ${event.location}`);
+      if (eventLocationText.includes(normalizedUserLocation)) {
+        return 0;
+      }
+
+      const eventRegion = getRegionKey(event.city) ?? getRegionKey(event.location);
+      const userRegion = getRegionKey(normalizedUserLocation);
+      if (eventRegion && userRegion && eventRegion === userRegion) {
+        return 1;
+      }
+
+      return 2;
+    };
+
+    const getCurrentSort = () => sortFilter?.value ?? 'views';
+
+    const updateSortChip = () => {
+      if (!viewChip) {
+        return;
+      }
+
+      const currentSort = getCurrentSort();
+      if (currentSort === 'proximity' && !getUserLocation()) {
+        viewChip.textContent = 'Ordenado por proximidade (defina a localização no perfil)';
+        return;
+      }
+
+      viewChip.textContent = sortChipLabels[currentSort] ?? sortChipLabels.views;
+    };
 
     const renderLoginState = () => {
       const session = getSession();
@@ -333,21 +450,151 @@ document.addEventListener('DOMContentLoaded', () => {
       loginToggleBtn.dataset.logged = 'false';
     };
 
+    const buildEventShareText = (event) => [
+      event.title,
+      event.dateLabel,
+      event.location,
+      `Ver mais: ${window.location.href}`
+    ].join('\n');
+
+    const shareEvent = async (eventId) => {
+      const eventToShare = events.find((item) => item.id === eventId);
+      if (!eventToShare) {
+        return;
+      }
+
+      const shareData = {
+        title: eventToShare.title,
+        text: buildEventShareText(eventToShare),
+        url: window.location.href
+      };
+
+      if (navigator.share) {
+        try {
+          await navigator.share(shareData);
+          return;
+        } catch {
+          return;
+        }
+      }
+
+      const shareText = `${shareData.title}\n${shareData.text}`;
+      try {
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(shareText);
+          return;
+        }
+      } catch {
+        // Fallback abaixo.
+      }
+
+      const fallbackField = document.createElement('textarea');
+      fallbackField.value = shareText;
+      fallbackField.setAttribute('readonly', 'true');
+      fallbackField.style.position = 'absolute';
+      fallbackField.style.left = '-9999px';
+      document.body.appendChild(fallbackField);
+      fallbackField.select();
+      document.execCommand('copy');
+      fallbackField.remove();
+    };
+
+    const updateDateControls = () => {
+      if (!dateCustomControls || !dateFilter) {
+        return;
+      }
+
+      const shouldShow = dateFilter.value === 'Escolher data' && dateControlsOpen;
+      dateCustomControls.hidden = !shouldShow;
+      dateCustomControls.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+    };
+
+    const openDateControls = () => {
+      if (!dateFilter || dateFilter.value !== 'Escolher data') {
+        return;
+      }
+
+      dateControlsOpen = true;
+      updateDateControls();
+    };
+
+    const closeDateControls = () => {
+      dateControlsOpen = false;
+      updateDateControls();
+    };
+
+    const matchesDateFilter = (event, selectedDate) => {
+      if (selectedDate === 'Todos') {
+        return true;
+      }
+
+      const eventDateKey = event.eventDate.slice(0, 10);
+      const todayKey = getDateKey(new Date());
+
+      if (selectedDate === 'Hoje') {
+        return eventDateKey === todayKey;
+      }
+
+      if (selectedDate === 'Passados') {
+        return eventDateKey < todayKey;
+      }
+
+      if (selectedDate === 'Periódicos') {
+        return Boolean(event.isRecurring);
+      }
+
+      if (selectedDate === 'Esta semana') {
+        return eventDateKey >= todayKey && eventDateKey <= addDaysToKey(todayKey, 6);
+      }
+
+      if (selectedDate === 'Este mês') {
+        return isSameMonth(eventDateKey, todayKey);
+      }
+
+      if (selectedDate === 'Este ano') {
+        return isSameYear(eventDateKey, todayKey);
+      }
+
+      if (selectedDate === 'Escolher data') {
+        return !appliedSpecificDate || eventDateKey === appliedSpecificDate;
+      }
+
+      return true;
+    };
+
     const renderCards = () => {
       const query = searchInput.value.trim().toLowerCase();
       const selectedCategory = categoryFilter?.value ?? 'Todos';
       const selectedDate = dateFilter?.value ?? 'Todos';
       const selectedLocation = locationFilter?.value ?? 'Todos';
       const selectedPrice = priceFilter?.value ?? 'Todos';
+      const currentSort = getCurrentSort();
+      const userLocation = getUserLocation();
 
-      const sourceEvents = getListingEvents();
+      const sourceEvents = getListingEvents(selectedDate === 'Passados' || selectedDate === 'Escolher data' || selectedDate === 'Periódicos');
       const filtered = sourceEvents.filter((event) => {
         const matchesQuery = !query || [event.title, event.category, event.location, event.dateLabel, event.priceLabel].join(' ').toLowerCase().includes(query);
         const matchesCategory = selectedCategory === 'Todos' || event.category === selectedCategory;
-        const matchesDate = selectedDate === 'Todos' || event.dateBucket === selectedDate;
+        const matchesDate = matchesDateFilter(event, selectedDate);
         const matchesLocation = selectedLocation === 'Todos' || event.city === selectedLocation;
         const matchesPrice = selectedPrice === 'Todos' || event.priceType === selectedPrice;
         return matchesQuery && matchesCategory && matchesDate && matchesLocation && matchesPrice;
+      }).sort((firstEvent, secondEvent) => {
+        if (currentSort === 'date') {
+          return getEventDateTime(firstEvent) - getEventDateTime(secondEvent);
+        }
+
+        if (currentSort === 'proximity') {
+          const firstScore = getProximityScore(firstEvent, userLocation);
+          const secondScore = getProximityScore(secondEvent, userLocation);
+          if (firstScore !== secondScore) {
+            return firstScore - secondScore;
+          }
+
+          return secondEvent.views - firstEvent.views;
+        }
+
+        return secondEvent.views - firstEvent.views;
       });
 
       resultsCount.textContent = filtered.length;
@@ -368,50 +615,109 @@ document.addEventListener('DOMContentLoaded', () => {
       element.addEventListener('change', renderCards);
     });
 
-    if (filtersToggleBtn && filtersShell && filtersBackdrop) {
-      const closeFilters = () => {
-        filtersShell.classList.remove('open');
-        filtersToggleBtn.setAttribute('aria-expanded', 'false');
-        filtersBackdrop.hidden = true;
-      };
-
-      const openFilters = () => {
-        filtersShell.classList.add('open');
-        filtersToggleBtn.setAttribute('aria-expanded', 'true');
-        filtersBackdrop.hidden = false;
-      };
-
-      filtersToggleBtn.addEventListener('click', () => {
-        if (filtersShell.classList.contains('open')) {
-          closeFilters();
-          return;
-        }
-
-        openFilters();
-      });
-
-      filtersBackdrop.addEventListener('click', closeFilters);
-
-      document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
-          closeFilters();
-        }
-      });
-
-      [categoryFilter, dateFilter, locationFilter, priceFilter].forEach((element) => {
-        if (!element) {
-          return;
-        }
-
-        element.addEventListener('change', () => {
-          if (window.innerWidth <= 900) {
-            closeFilters();
-          }
-        });
+    if (sortFilter) {
+      sortFilter.addEventListener('change', () => {
+        updateSortChip();
+        renderCards();
       });
     }
 
+    if (dateFilter) {
+      dateFilter.addEventListener('change', () => {
+        if (dateFilter.value === 'Escolher data') {
+          openDateControls();
+        } else {
+          dateControlsOpen = false;
+          updateDateControls();
+        }
+
+        if (dateFilter.value !== 'Escolher data') {
+          appliedSpecificDate = '';
+          if (datePickerInput) {
+            datePickerInput.value = '';
+          }
+
+          renderCards();
+          return;
+        }
+      });
+
+      dateFilter.addEventListener('focus', () => {
+        if (dateFilter.value === 'Escolher data' && !dateControlsOpen) {
+          openDateControls();
+        }
+      });
+
+      dateFilter.addEventListener('click', () => {
+        if (dateFilter.value === 'Escolher data' && !dateControlsOpen) {
+          requestAnimationFrame(openDateControls);
+        }
+      });
+
+      updateDateControls();
+    }
+
+    const openDatePicker = () => {
+      if (!datePickerInput) {
+        return;
+      }
+
+      if (typeof datePickerInput.showPicker === 'function') {
+        datePickerInput.showPicker();
+        return;
+      }
+
+      datePickerInput.click();
+    };
+
+    if (openDatePickerBtn) {
+      openDatePickerBtn.addEventListener('click', openDatePicker);
+    }
+
+    if (applyDateBtn) {
+      applyDateBtn.addEventListener('click', () => {
+        if (!datePickerInput?.value) {
+          appliedSpecificDate = '';
+          closeDateControls();
+          renderCards();
+          return;
+        }
+
+        appliedSpecificDate = datePickerInput.value;
+        closeDateControls();
+        renderCards();
+      });
+    }
+
+    updateSortChip();
+
+    document.addEventListener('click', (event) => {
+      if (!dateControlsOpen || dateFilter?.value !== 'Escolher data') {
+        return;
+      }
+
+      const target = event.target;
+      if (!(target instanceof Element)) {
+        return;
+      }
+
+      if (target.closest('.date-filter-group')) {
+        return;
+      }
+
+      closeDateControls();
+    });
+
     cardsGrid.addEventListener('click', (event) => {
+      const shareButton = event.target.closest('.share-btn');
+      if (shareButton) {
+        const eventId = shareButton.dataset.eventId;
+        if (eventId) {
+          void shareEvent(eventId);
+        }
+        return;
+      }
+
       const favoriteButton = event.target.closest('.favorite-btn');
       if (!favoriteButton) {
         return;
@@ -472,11 +778,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      const currentSession = getSession();
+
       setSession({
         email: matchedAccount.email,
         name: matchedAccount.name,
         roleLabel: matchedAccount.roleLabel,
-        accountType: matchedAccount.accountType
+        accountType: matchedAccount.accountType,
+        location: currentSession?.location ?? ''
       });
 
       updateAuthMessage(`Sessão iniciada como ${matchedAccount.roleLabel}.`);
@@ -587,6 +896,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                   </div>
 
+                  <div class="profile-location-box">
+                    <label for="profileLocationInput">Localização para proximidade</label>
+                    <div class="profile-location-row">
+                      <input id="profileLocationInput" type="text" placeholder="Ex.: Lisboa" value="${session.location ?? ''}" />
+                      <button id="profileLocationSaveBtn" type="button">Guardar</button>
+                    </div>
+                  </div>
+
                   <div class="profile-stat-grid">
                     <div class="profile-stat">
                       <strong>3</strong>
@@ -636,6 +953,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const savedEventCard = document.getElementById('savedEventCard');
       const historyList = document.getElementById('historyList');
+      const profileLocationInput = document.getElementById('profileLocationInput');
+      const profileLocationSaveBtn = document.getElementById('profileLocationSaveBtn');
       const tabButtons = Array.from(document.querySelectorAll('[data-profile-tab]'));
       const panes = Array.from(document.querySelectorAll('[data-profile-pane]'));
 
@@ -683,6 +1002,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       });
 
+      if (profileLocationSaveBtn && profileLocationInput) {
+        profileLocationSaveBtn.addEventListener('click', () => {
+          const updatedLocation = profileLocationInput.value.trim();
+          const updatedSession = { ...session, location: updatedLocation };
+          setSession(updatedSession);
+          profileLocationSaveBtn.textContent = 'Guardado';
+          window.setTimeout(() => {
+            profileLocationSaveBtn.textContent = 'Guardar';
+          }, 1200);
+        });
+      }
+
       return;
     }
 
@@ -690,7 +1021,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const organizerEvents = [
         {
           title: 'Festival de Fado de Lisboa',
-          category: 'Música',
+          category: 'Concertos',
           date: '20/03/2026',
           location: 'Centro Cultural de Belém',
           status: 'published',
@@ -699,7 +1030,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
           title: 'Noite de Jazz no Porto',
-          category: 'Música',
+          category: 'Concertos',
           date: '25/03/2026',
           location: 'Hot Clube de Portugal',
           status: 'published',
