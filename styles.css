@@ -565,6 +565,14 @@ select {
   pointer-events: none;
 }
 
+.event-card.is-past .event-media::after {
+  background: linear-gradient(180deg, rgba(120, 120, 120, 0.3), rgba(80, 80, 80, 0.5));
+}
+
+.event-card.is-past .event-media img {
+  filter: grayscale(1) contrast(0.95) brightness(0.82);
+}
+
 .event-pill,
 .favorite-btn,
 .share-btn {

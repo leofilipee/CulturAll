@@ -5,8 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
       title: 'Festival de Fado de Lisboa',
       category: 'Concertos',
       dateLabel: '20 de março às 21:00',
-      dateBucket: 'Este mês',
-      eventDate: '2026-04-03T21:00:00',
+      dateBucket: 'Passados',
+      eventDate: '2026-03-20T21:00:00',
       location: 'Centro Cultural de Belém, Lisboa',
       city: 'Lisboa',
       priceLabel: '€25',
@@ -19,8 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
       title: 'Peça: O Auto da Barca do Inferno',
       category: 'Teatro',
       dateLabel: '18 de março às 19:30',
-      dateBucket: 'Esta semana',
-      eventDate: '2026-04-01T19:30:00',
+      dateBucket: 'Passados',
+      eventDate: '2026-03-18T19:30:00',
       location: 'Teatro Nacional D. Maria II, Lisboa',
       city: 'Lisboa',
       priceLabel: '€18',
@@ -33,8 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
       title: 'Exposição: Arte Contemporânea Portuguesa',
       category: 'Arte e Exposições',
       dateLabel: '15 de março às 10:00',
-      dateBucket: 'Esta semana',
-      eventDate: '2026-04-05T10:00:00',
+      dateBucket: 'Passados',
+      eventDate: '2026-03-15T10:00:00',
       location: 'Museu Berardo, Lisboa',
       city: 'Lisboa',
       priceLabel: 'Entrada Gratuita',
@@ -47,8 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
       title: 'Espetáculo de Dança Contemporânea',
       category: 'Dança',
       dateLabel: '22 de março às 20:00',
-      dateBucket: 'Este mês',
-      eventDate: '2026-04-08T20:00:00',
+      dateBucket: 'Passados',
+      eventDate: '2026-03-22T20:00:00',
       location: 'Casa da Música, Porto',
       city: 'Porto',
       priceLabel: '€15',
@@ -61,8 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
       title: 'Festival Primavera Sound',
       category: 'Festivais',
       dateLabel: '28 de março às 16:00',
-      dateBucket: 'Este mês',
-      eventDate: '2026-05-02T16:00:00',
+      dateBucket: 'Passados',
+      eventDate: '2026-03-28T16:00:00',
       location: 'Parque da Cidade, Porto',
       city: 'Porto',
       priceLabel: '€85',
@@ -75,8 +75,8 @@ document.addEventListener('DOMContentLoaded', () => {
       title: 'Rota Gastronómica do Alentejo',
       category: 'Gastronomia',
       dateLabel: '16 de março às 12:00',
-      dateBucket: 'Esta semana',
-      eventDate: '2026-03-18T12:00:00',
+      dateBucket: 'Passados',
+      eventDate: '2026-03-16T12:00:00',
       location: 'Évora Centro Histórico, Alentejo',
       city: 'Évora',
       priceLabel: '€45',
@@ -89,8 +89,8 @@ document.addEventListener('DOMContentLoaded', () => {
       title: 'Cinema ao Ar Livre: Clássicos Portugueses',
       category: 'Cinema',
       dateLabel: '19 de março às 21:30',
-      dateBucket: 'Este mês',
-      eventDate: '2026-04-12T21:30:00',
+      dateBucket: 'Passados',
+      eventDate: '2026-03-19T21:30:00',
       location: 'Jardim da Estrela, Lisboa',
       city: 'Lisboa',
       priceLabel: 'Entrada Gratuita',
@@ -103,14 +103,71 @@ document.addEventListener('DOMContentLoaded', () => {
       title: 'Noite de Jazz no Porto',
       category: 'Concertos',
       dateLabel: '25 de março às 22:00',
-      dateBucket: 'Este mês',
-      eventDate: '2026-04-15T22:00:00',
+      dateBucket: 'Passados',
+      eventDate: '2026-03-25T22:00:00',
       location: 'Hot Clube de Portugal, Porto',
       city: 'Porto',
       priceLabel: '€20',
       priceType: 'Pago',
       views: 699,
       image: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=74'
+    },
+    {
+      id: 'concerto-kpop-meo-arena',
+      title: 'Concerto K-Pop',
+      category: 'Para Famílias',
+      dateLabel: '25 de abril às 15:00',
+      dateBucket: 'Este mês',
+      eventDate: '2026-04-25T15:00:00',
+      location: 'MEO Arena, Lisboa',
+      city: 'Lisboa',
+      priceLabel: '€30',
+      priceType: 'Pago',
+      views: 901,
+      image: 'img/events/concerto-kpop-meoarena.jpeg'
+    },
+    {
+      id: 'noite-do-fado-alfama',
+      title: 'Noite do Fado',
+      category: 'Concertos',
+      dateLabel: 'Todas as sextas',
+      dateBucket: 'Periódicos',
+      eventDate: '2026-04-24T21:30:00',
+      location: 'Alfama, Lisboa',
+      city: 'Lisboa',
+      priceLabel: '€18',
+      priceType: 'Pago',
+      views: 775,
+      isRecurring: true,
+      image: 'img/events/noite-de-fado-almada.jpeg'
+    },
+    {
+      id: 'web-summit-lisboa-2026',
+      title: 'Web Summit Lisboa 2026',
+      category: 'Outros',
+      dateLabel: '9-11 de novembro',
+      dateBucket: 'Este ano',
+      eventDate: '2026-11-09T09:00:00',
+      location: 'FIL, Lisboa',
+      city: 'Lisboa',
+      priceLabel: '€390',
+      priceType: 'Pago',
+      views: 1320,
+      image: 'img/events/web-summit-lisboa.jpeg'
+    },
+    {
+      id: 'sol-da-caparica-2026',
+      title: 'Sol da Caparica 2026',
+      category: 'Festivais',
+      dateLabel: '13-16 de agosto',
+      dateBucket: 'Este ano',
+      eventDate: '2026-08-13T16:00:00',
+      location: 'Costa da Caparica',
+      city: 'Costa da Caparica',
+      priceLabel: '€45',
+      priceType: 'Pago',
+      views: 1104,
+      image: 'img/events/sol-caparica-costadacaparica.jpeg'
     }
   ];
 
@@ -170,9 +227,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const iconLogout = '<svg viewBox="0 0 24 24"><path d="M14 17l5-5-5-5"></path><path d="M19 12H8"></path><path d="M8 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h3"></path></svg>';
   const pageConfig = {
     home: {
-      title: 'Mais Populares',
+      title: 'Poderá gostar destes eventos',
       subtitle: 'eventos mais vistos e em destaque',
-      chip: 'Ordenado por visualizações',
+      chip: 'Ordenado por data',
       empty: 'Nenhum evento corresponde aos filtros atuais.'
     },
     events: {
@@ -236,6 +293,38 @@ document.addEventListener('DOMContentLoaded', () => {
     return localDate.toISOString().slice(0, 10);
   };
 
+  const getEventDateKey = (event) => getDateKey(new Date(event.eventDate));
+
+  const getSelectedDateKey = (value) => {
+    if (!value) {
+      return '';
+    }
+
+    const parsedDate = new Date(`${value}T00:00:00`);
+    return Number.isNaN(parsedDate.getTime()) ? '' : getDateKey(parsedDate);
+  };
+
+  const compareEventsByDate = (firstEvent, secondEvent) => {
+    const todayKey = getDateKey(new Date());
+    const firstDateKey = getEventDateKey(firstEvent);
+    const secondDateKey = getEventDateKey(secondEvent);
+    const firstIsPast = firstDateKey < todayKey;
+    const secondIsPast = secondDateKey < todayKey;
+
+    if (firstIsPast !== secondIsPast) {
+      return firstIsPast ? 1 : -1;
+    }
+
+    const firstTime = getEventDateTime(firstEvent);
+    const secondTime = getEventDateTime(secondEvent);
+
+    if (firstIsPast) {
+      return secondTime - firstTime;
+    }
+
+    return firstTime - secondTime;
+  };
+
   const addDaysToKey = (dateKey, daysToAdd) => {
     const date = new Date(`${dateKey}T00:00:00`);
     date.setDate(date.getDate() + daysToAdd);
@@ -254,27 +343,83 @@ document.addEventListener('DOMContentLoaded', () => {
     return date.getFullYear() === referenceDate.getFullYear();
   };
 
-  const isUpcomingEvent = (event) => getEventDateTime(event) >= Date.now();
+  const normalizeLocation = (value) => (value ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLowerCase();
 
-  const getListingEvents = (includePastEvents = false) => {
-    const upcomingEvents = events.filter(isUpcomingEvent);
-    const baseEvents = includePastEvents ? events : upcomingEvents;
+  const districtRegionMap = {
+    Aveiro: 'centro',
+    Beja: 'alentejo',
+    Braga: 'norte',
+    Bragança: 'norte',
+    'Castelo Branco': 'centro',
+    Coimbra: 'centro',
+    Évora: 'alentejo',
+    Faro: 'algarve',
+    Guarda: 'centro',
+    Leiria: 'centro',
+    Lisboa: 'litoral',
+    Portalegre: 'alentejo',
+    Porto: 'norte',
+    Santarém: 'centro',
+    Setúbal: 'litoral',
+    'Viana do Castelo': 'norte',
+    'Vila Real': 'norte',
+    Viseu: 'centro',
+    Outros: 'outros'
+  };
 
-    if (pageType === 'events') {
-      return upcomingEvents.sort((firstEvent, secondEvent) => getEventDateTime(firstEvent) - getEventDateTime(secondEvent));
+  const districtAliases = [
+    { district: 'Aveiro', aliases: ['aveiro'] },
+    { district: 'Beja', aliases: ['beja'] },
+    { district: 'Braga', aliases: ['braga', 'guimaraes'] },
+    { district: 'Bragança', aliases: ['braganca'] },
+    { district: 'Castelo Branco', aliases: ['castelo branco', 'covilha'] },
+    { district: 'Coimbra', aliases: ['coimbra', 'figueira da foz'] },
+    { district: 'Évora', aliases: ['evora'] },
+    { district: 'Faro', aliases: ['faro', 'lagos', 'tavira'] },
+    { district: 'Guarda', aliases: ['guarda'] },
+    { district: 'Leiria', aliases: ['leiria'] },
+    { district: 'Lisboa', aliases: ['lisboa', 'loures', 'oeiras', 'alfama'] },
+    { district: 'Portalegre', aliases: ['portalegre'] },
+    { district: 'Porto', aliases: ['porto', 'maia', 'vila nova de gaia'] },
+    { district: 'Santarém', aliases: ['santarem'] },
+    { district: 'Setúbal', aliases: ['setubal', 'costa da caparica', 'almada', 'sesimbra'] },
+    { district: 'Viana do Castelo', aliases: ['viana do castelo'] },
+    { district: 'Vila Real', aliases: ['vila real', 'chaves'] },
+    { district: 'Viseu', aliases: ['viseu'] },
+    { district: 'Outros', aliases: ['funchal', 'ponta delgada', 'madeira', 'açores', 'azores'] }
+  ];
+
+  const getDistrictKey = (value) => {
+    const normalizedValue = normalizeLocation(value);
+    if (!normalizedValue) {
+      return null;
     }
 
+    return districtAliases.find(({ aliases }) => aliases.some((alias) => normalizedValue === alias || normalizedValue.includes(alias)))?.district ?? null;
+  };
+
+  const getEventDistrict = (event) => event.district ?? getDistrictKey(`${event.city ?? ''} ${event.location ?? ''}`) ?? 'Outros';
+
+  const isUpcomingEvent = (event) => getEventDateTime(event) >= Date.now();
+
+  const isPastEvent = (event) => getEventDateTime(event) < Date.now();
+
+  const getListingEvents = () => {
     if (pageType === 'favorites') {
       return getFavoriteIds()
         .map((favoriteId) => events.find((event) => event.id === favoriteId))
         .filter(Boolean);
     }
 
-    return baseEvents.sort((firstEvent, secondEvent) => secondEvent.views - firstEvent.views);
+    return [...events];
   };
 
   const buildEventCard = (event) => `
-    <article class="event-card" data-event-id="${event.id}" data-category="${event.category}" data-date="${event.dateBucket}" data-location="${event.city}" data-price="${event.priceType}" data-title="${event.title.toLowerCase()}">
+    <article class="event-card${isPastEvent(event) ? ' is-past' : ''}" data-event-id="${event.id}" data-category="${event.category}" data-date="${event.dateBucket}" data-location="${getEventDistrict(event)}" data-price="${event.priceType}" data-title="${event.title.toLowerCase()}">
       <div class="event-media">
         <span class="event-pill">${event.category}</span>
         <button class="share-btn" type="button" aria-label="Partilhar evento" data-event-id="${event.id}">
@@ -327,40 +472,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const filtersBackdrop = document.getElementById('filtersBackdrop');
     const page = pageConfig[pageType] ?? pageConfig.home;
     let appliedSpecificDate = '';
+    let activeDateFilter = 'Todos';
     let dateControlsOpen = false;
     const sortChipLabels = {
       views: 'Ordenado por visualizações',
       proximity: 'Ordenado por proximidade',
       date: 'Ordenado por data'
-    };
-
-    const cityRegionMap = {
-      lisboa: 'centro-litoral',
-      loures: 'centro-litoral',
-      oeiras: 'centro-litoral',
-      porto: 'norte',
-      braga: 'norte',
-      guimaraes: 'norte',
-      'viana do castelo': 'norte',
-      'vila nova de gaia': 'norte',
-      'vila real': 'norte',
-      braganca: 'norte',
-      chaves: 'norte',
-      maia: 'norte',
-      aveiro: 'centro',
-      coimbra: 'centro',
-      'figueira da foz': 'centro',
-      leiria: 'centro',
-      'castelo branco': 'centro',
-      covilha: 'centro',
-      guarda: 'centro',
-      evora: 'alentejo',
-      beja: 'alentejo',
-      faro: 'algarve',
-      lagos: 'algarve',
-      tavira: 'algarve',
-      funchal: 'madeira',
-      'ponta delgada': 'azores'
     };
 
     if (sectionTitle) {
@@ -377,30 +494,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const getUserLocation = () => (getSession()?.location ?? '').trim().toLowerCase();
 
-    const normalizeLocation = (value) => value
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .trim()
-      .toLowerCase();
-
-    const getRegionKey = (value) => {
-      const normalizedValue = normalizeLocation(value);
-      return Object.entries(cityRegionMap).find(([city]) => normalizedValue.includes(city))?.[1] ?? null;
-    };
+    const getUserDistrict = () => getDistrictKey(getSession()?.location ?? '') ?? 'Outros';
 
     const getProximityScore = (event, userLocation) => {
       if (!userLocation) {
         return Number.POSITIVE_INFINITY;
       }
 
-      const normalizedUserLocation = normalizeLocation(userLocation);
-      const eventLocationText = normalizeLocation(`${event.city} ${event.location}`);
-      if (eventLocationText.includes(normalizedUserLocation)) {
+      const userDistrict = getDistrictKey(userLocation);
+      if (!userDistrict) {
+        return Number.POSITIVE_INFINITY;
+      }
+
+      const eventDistrict = getEventDistrict(event);
+      if (eventDistrict === userDistrict) {
         return 0;
       }
 
-      const eventRegion = getRegionKey(event.city) ?? getRegionKey(event.location);
-      const userRegion = getRegionKey(normalizedUserLocation);
+      const eventRegion = districtRegionMap[eventDistrict] ?? null;
+      const userRegion = districtRegionMap[userDistrict] ?? null;
       if (eventRegion && userRegion && eventRegion === userRegion) {
         return 1;
       }
@@ -408,7 +520,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return 2;
     };
 
-    const getCurrentSort = () => sortFilter?.value ?? 'views';
+    const getCurrentSort = () => sortFilter?.value ?? 'date';
 
     const updateSortChip = () => {
       if (!viewChip) {
@@ -528,7 +640,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return true;
       }
 
-      const eventDateKey = event.eventDate.slice(0, 10);
+      const eventDateKey = getEventDateKey(event);
       const todayKey = getDateKey(new Date());
 
       if (selectedDate === 'Hoje') {
@@ -565,23 +677,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderCards = () => {
       const query = searchInput.value.trim().toLowerCase();
       const selectedCategory = categoryFilter?.value ?? 'Todos';
-      const selectedDate = dateFilter?.value ?? 'Todos';
+      const selectedDate = activeDateFilter;
       const selectedLocation = locationFilter?.value ?? 'Todos';
       const selectedPrice = priceFilter?.value ?? 'Todos';
       const currentSort = getCurrentSort();
       const userLocation = getUserLocation();
 
-      const sourceEvents = getListingEvents(selectedDate === 'Passados' || selectedDate === 'Escolher data' || selectedDate === 'Periódicos');
+      const sourceEvents = getListingEvents();
       const filtered = sourceEvents.filter((event) => {
         const matchesQuery = !query || [event.title, event.category, event.location, event.dateLabel, event.priceLabel].join(' ').toLowerCase().includes(query);
         const matchesCategory = selectedCategory === 'Todos' || event.category === selectedCategory;
         const matchesDate = matchesDateFilter(event, selectedDate);
-        const matchesLocation = selectedLocation === 'Todos' || event.city === selectedLocation;
+        const matchesLocation = selectedLocation === 'Todos' || getEventDistrict(event) === selectedLocation;
         const matchesPrice = selectedPrice === 'Todos' || event.priceType === selectedPrice;
         return matchesQuery && matchesCategory && matchesDate && matchesLocation && matchesPrice;
       }).sort((firstEvent, secondEvent) => {
         if (currentSort === 'date') {
-          return getEventDateTime(firstEvent) - getEventDateTime(secondEvent);
+          return compareEventsByDate(firstEvent, secondEvent);
         }
 
         if (currentSort === 'proximity') {
@@ -626,20 +738,19 @@ document.addEventListener('DOMContentLoaded', () => {
       dateFilter.addEventListener('change', () => {
         if (dateFilter.value === 'Escolher data') {
           openDateControls();
-        } else {
-          dateControlsOpen = false;
-          updateDateControls();
-        }
-
-        if (dateFilter.value !== 'Escolher data') {
-          appliedSpecificDate = '';
-          if (datePickerInput) {
-            datePickerInput.value = '';
-          }
-
-          renderCards();
           return;
         }
+
+        activeDateFilter = dateFilter.value;
+        dateControlsOpen = false;
+        updateDateControls();
+
+        appliedSpecificDate = '';
+        if (datePickerInput) {
+          datePickerInput.value = '';
+        }
+
+        renderCards();
       });
 
       dateFilter.addEventListener('focus', () => {
@@ -677,13 +788,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (applyDateBtn) {
       applyDateBtn.addEventListener('click', () => {
         if (!datePickerInput?.value) {
-          appliedSpecificDate = '';
           closeDateControls();
-          renderCards();
           return;
         }
 
-        appliedSpecificDate = datePickerInput.value;
+        activeDateFilter = 'Escolher data';
+        appliedSpecificDate = getSelectedDateKey(datePickerInput.value);
         closeDateControls();
         renderCards();
       });
@@ -707,6 +817,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
       closeDateControls();
     });
+
+    if (filtersToggleBtn && filtersShell && filtersBackdrop) {
+      const closeFilters = () => {
+        filtersShell.classList.remove('open');
+        filtersToggleBtn.setAttribute('aria-expanded', 'false');
+        filtersBackdrop.hidden = true;
+      };
+
+      const openFilters = () => {
+        filtersShell.classList.add('open');
+        filtersToggleBtn.setAttribute('aria-expanded', 'true');
+        filtersBackdrop.hidden = false;
+      };
+
+      filtersToggleBtn.addEventListener('click', () => {
+        if (filtersShell.classList.contains('open')) {
+          closeFilters();
+          return;
+        }
+
+        openFilters();
+      });
+
+      filtersBackdrop.addEventListener('click', closeFilters);
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          closeFilters();
+        }
+      });
+
+      [categoryFilter, dateFilter, locationFilter, priceFilter, sortFilter].forEach((element) => {
+        if (!element) {
+          return;
+        }
+
+        element.addEventListener('change', () => {
+          if (window.innerWidth <= 900) {
+            closeFilters();
+          }
+        });
+      });
+    }
 
     cardsGrid.addEventListener('click', (event) => {
       const shareButton = event.target.closest('.share-btn');
