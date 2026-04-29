@@ -227,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const iconLogout = '<svg viewBox="0 0 24 24"><path d="M14 17l5-5-5-5"></path><path d="M19 12H8"></path><path d="M8 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h3"></path></svg>';
   const pageConfig = {
     home: {
-      title: 'Poderá gostar destes eventos',
+      title: 'Todos os Eventos',
       subtitle: 'eventos mais vistos e em destaque',
       chip: 'Ordenado por data',
       empty: 'Nenhum evento corresponde aos filtros atuais.'
@@ -418,8 +418,47 @@ document.addEventListener('DOMContentLoaded', () => {
     return [...events];
   };
 
+  const getEventById = (eventId) => events.find((event) => event.id === eventId) ?? null;
+
+  const getEventDetailUrl = (eventId) => `event.html?id=${encodeURIComponent(eventId)}`;
+
+  const formatEventDetailDate = (event) => {
+    const eventDate = new Date(event.eventDate);
+    return new Intl.DateTimeFormat('pt-PT', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(eventDate);
+  };
+
+  const buildRelatedEventCard = (event) => `
+    <article class="event-card${isPastEvent(event) ? ' is-past' : ''}" tabindex="0" role="link" aria-label="Abrir evento ${event.title}" data-event-id="${event.id}" data-event-link="${getEventDetailUrl(event.id)}" data-category="${event.category}" data-date="${event.dateBucket}" data-location="${getEventDistrict(event)}" data-price="${event.priceType}" data-title="${event.title.toLowerCase()}">
+      <div class="event-media">
+        <span class="event-pill">${event.category}</span>
+        <button class="favorite-btn${isFavorite(event.id) ? ' active' : ''}" type="button" aria-label="${isFavorite(event.id) ? 'Remover dos favoritos' : 'Guardar evento'}" aria-pressed="${isFavorite(event.id) ? 'true' : 'false'}" data-event-id="${event.id}">
+          <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.6-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.4-7 10-7 10Z"></path></svg>
+        </button>
+        <img src="${event.image}" alt="${event.title}" loading="lazy" />
+      </div>
+      <div class="event-body">
+        <h2 class="event-title">${event.title}</h2>
+        <div class="meta-list">
+          <div class="meta-item">${iconCalendar}<span>${event.dateLabel}</span></div>
+          <div class="meta-item">${iconLocation}<span>${event.location}</span></div>
+        </div>
+        <div class="price-row">
+          <span class="price ${event.priceType === 'Gratuito' ? 'free' : ''}">${event.priceLabel}</span>
+          <span class="tagline">${event.views} visualizações</span>
+        </div>
+      </div>
+    </article>
+  `;
+
   const buildEventCard = (event) => `
-    <article class="event-card${isPastEvent(event) ? ' is-past' : ''}" data-event-id="${event.id}" data-category="${event.category}" data-date="${event.dateBucket}" data-location="${getEventDistrict(event)}" data-price="${event.priceType}" data-title="${event.title.toLowerCase()}">
+    <article class="event-card${isPastEvent(event) ? ' is-past' : ''}" tabindex="0" role="link" aria-label="Abrir evento ${event.title}" data-event-id="${event.id}" data-event-link="${getEventDetailUrl(event.id)}" data-category="${event.category}" data-date="${event.dateBucket}" data-location="${getEventDistrict(event)}" data-price="${event.priceType}" data-title="${event.title.toLowerCase()}">
       <div class="event-media">
         <span class="event-pill">${event.category}</span>
         <button class="share-btn" type="button" aria-label="Partilhar evento" data-event-id="${event.id}">
@@ -444,11 +483,170 @@ document.addEventListener('DOMContentLoaded', () => {
     </article>
   `;
 
+  const renderEventDetailPage = () => {
+    const detailRoot = document.getElementById('eventDetailRoot');
+    if (!detailRoot) {
+      return;
+    }
+
+    const url = new URL(window.location.href);
+    const eventId = url.searchParams.get('id');
+    const event = eventId ? getEventById(eventId) : null;
+
+    if (!event) {
+      window.location.href = 'index.html';
+      return;
+    }
+
+    const relatedEvents = events
+      .filter((item) => item.id !== event.id)
+      .filter((item) => item.category === event.category || getEventDistrict(item) === getEventDistrict(event))
+      .slice(0, 3);
+
+    detailRoot.innerHTML = `
+      <div class="event-detail-page">
+        <header class="topbar event-detail-topbar">
+          <a class="topbar-brand" href="index.html" aria-label="Cultur'All início">
+            <span>Cultur'</span><span>All</span>
+          </a>
+
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+            <input id="searchInput" type="search" placeholder="Pesquisar eventos..." aria-label="Pesquisar eventos" />
+          </div>
+
+          <div class="topbar-actions">
+            <span class="account-chip" id="accountChip" hidden></span>
+            <a class="favorites-btn" href="favorites.html" aria-label="Favoritos">
+              <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.6-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.4-7 10-7 10Z"></path></svg>
+              Favoritos
+            </a>
+            <a class="login-btn" id="loginToggleBtn" href="login.html">
+              <svg viewBox="0 0 24 24"><path d="M10 17l5-5-5-5"></path><path d="M15 12H4"></path><path d="M20 4v16"></path></svg>
+              Entrar
+            </a>
+          </div>
+        </header>
+
+        <main class="event-detail-main">
+          <section class="event-detail-back-row">
+            <a class="event-detail-back-link" href="index.html">
+              <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"></path></svg>
+              Voltar aos eventos
+            </a>
+          </section>
+
+          <section class="event-detail-hero">
+            <img src="${event.image}" alt="${event.title}" />
+            <div class="event-detail-hero-overlay"></div>
+            <div class="event-detail-hero-inner">
+              <h1>${event.title}</h1>
+            </div>
+          </section>
+
+          <section class="event-detail-content">
+            <article class="event-detail-card event-detail-about">
+              <h2>Sobre o Evento</h2>
+              <p>${event.description ?? 'Descrição indisponível no momento. Este evento faz parte da seleção cultural da plataforma.'}</p>
+            </article>
+
+            <aside class="event-detail-card event-detail-info">
+              <h2>Informações</h2>
+
+              <div class="event-detail-info-row">
+                <span class="event-detail-info-label">Data e Hora</span>
+                <strong>${formatEventDetailDate(event)}</strong>
+              </div>
+
+              <div class="event-detail-info-row">
+                <span class="event-detail-info-label">Localização</span>
+                <strong>${event.location}</strong>
+              </div>
+
+              <div class="event-detail-info-row">
+                <span class="event-detail-info-label">Organizador</span>
+                <strong>${event.organizer ?? 'Organização do evento'}</strong>
+              </div>
+
+              <div class="event-detail-info-row">
+                <span class="event-detail-info-label">Preço</span>
+                <strong class="event-detail-price ${event.priceType === 'Gratuito' ? 'free' : ''}">${event.priceLabel}</strong>
+              </div>
+
+              <a class="event-detail-action primary" href="#" role="button">Ver Bilhetes</a>
+              <button class="event-detail-action secondary" type="button">Guardar Evento</button>
+            </aside>
+          </section>
+
+          <section class="event-detail-related">
+            <h2>Eventos Relacionados</h2>
+            <div class="cards-grid event-detail-related-grid" id="relatedEventsGrid">
+              ${relatedEvents.map(buildRelatedEventCard).join('')}
+            </div>
+          </section>
+        </main>
+      </div>
+    `;
+
+    bindCardNavigation(document.getElementById('relatedEventsGrid'));
+  };
+
+  const bindCardNavigation = (container) => {
+    if (!container) {
+      return;
+    }
+
+    container.addEventListener('click', (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) {
+        return;
+      }
+
+      if (target.closest('button, a')) {
+        return;
+      }
+
+      const card = target.closest('.event-card[data-event-link]');
+      const link = card?.dataset.eventLink;
+      if (!link) {
+        return;
+      }
+
+      window.location.href = link;
+    });
+
+    container.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') {
+        return;
+      }
+
+      const target = event.target;
+      if (!(target instanceof Element)) {
+        return;
+      }
+
+      if (target.closest('button, a')) {
+        return;
+      }
+
+      const card = target.closest('.event-card[data-event-link]');
+      const link = card?.dataset.eventLink;
+      if (!link) {
+        return;
+      }
+
+      event.preventDefault();
+      window.location.href = link;
+    });
+  };
+
   const renderListingPage = () => {
     const cardsGrid = document.getElementById('cardsGrid');
     if (!cardsGrid) {
       return;
     }
+
+    bindCardNavigation(cardsGrid);
 
     const emptyState = document.getElementById('emptyState');
     const resultsCount = document.getElementById('resultsCount');
@@ -457,7 +655,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewChip = document.getElementById('viewChip');
     const searchInput = document.getElementById('searchInput');
     const categoryFilter = document.getElementById('categoryFilter');
-    const dateFilter = document.getElementById('dateFilter');
     const dateCustomControls = document.getElementById('dateCustomControls');
     const datePickerInput = document.getElementById('datePickerInput');
     const openDatePickerBtn = document.getElementById('openDatePickerBtn');
@@ -974,7 +1171,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const profileAccountChip = document.getElementById('profileAccountChip');
     const profileLogoutBtn = document.getElementById('profileLogoutBtn');
     const profileMobileNav = document.getElementById('profileMobileNav');
-    const profileBrand = document.querySelector('.profile-page .brand-mark');
 
     if (profileAccountChip) {
       profileAccountChip.textContent = session.name;
@@ -985,10 +1181,6 @@ document.addEventListener('DOMContentLoaded', () => {
         clearSession();
         window.location.href = 'index.html';
       });
-    }
-
-    if (profileBrand) {
-      profileBrand.setAttribute('href', 'profile.html');
     }
 
     if (session.accountType === 'lambda') {
@@ -1089,10 +1281,6 @@ document.addEventListener('DOMContentLoaded', () => {
         <a href="index.html">
           <svg viewBox="0 0 24 24"><path d="M4 11.5 12 4l8 7.5"></path><path d="M6 10.5V20h12v-9.5"></path></svg>
           Início
-        </a>
-        <a href="events.html">
-          <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"></rect><path d="M8 3v4"></path><path d="M16 3v4"></path><path d="M4 9h16"></path></svg>
-          Eventos
         </a>
         <a href="favorites.html">
           <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.6-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.4-7 10-7 10Z"></path></svg>
@@ -1241,10 +1429,6 @@ document.addEventListener('DOMContentLoaded', () => {
           <svg viewBox="0 0 24 24"><path d="M4 11.5 12 4l8 7.5"></path><path d="M6 10.5V20h12v-9.5"></path></svg>
           Início
         </a>
-        <a href="events.html">
-          <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"></rect><path d="M8 3v4"></path><path d="M16 3v4"></path><path d="M4 9h16"></path></svg>
-          Eventos
-        </a>
         <a href="favorites.html">
           <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.6-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.4-7 10-7 10Z"></path></svg>
           Favoritos
@@ -1281,6 +1465,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.location.href = 'index.html';
   };
+
+  if (pageType === 'event') {
+    renderEventDetailPage();
+    renderLoginPage();
+    return;
+  }
 
   renderListingPage();
   renderLoginPage();
