@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
     {
       id: 'concerto-kpop-meo-arena',
       title: 'Concerto K-Pop',
-      category: 'Para Famílias',
+      category: 'Família',
       dateLabel: '25 de abril às 15:00',
       dateBucket: 'Este mês',
       eventDate: '2026-04-25T15:00:00',
@@ -218,8 +218,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   ];
 
+  const weekdayOptions = [
+    { value: 'Seg', label: 'Seg' },
+    { value: 'Ter', label: 'Ter' },
+    { value: 'Qua', label: 'Qua' },
+    { value: 'Qui', label: 'Qui' },
+    { value: 'Sex', label: 'Sex' },
+    { value: 'Sáb', label: 'Sáb' },
+    { value: 'Dom', label: 'Dom' }
+  ];
+
   const sessionKey = 'culturall-session';
   const favoritesKey = 'culturall-favorites';
+  const guestFavoritesKey = 'culturall-favorites-guest';
+  const createdEventsKey = 'culturall-created-events';
   const pageType = document.body.dataset.page ?? 'home';
   const iconCalendar = '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"></rect><path d="M8 3v4"></path><path d="M16 3v4"></path><path d="M4 9h16"></path></svg>';
   const iconLocation = '<svg viewBox="0 0 24 24"><path d="M12 21s6-5.5 6-11a6 6 0 0 0-12 0c0 5.5 6 11 6 11Z"></path><circle cx="12" cy="10" r="2.2"></circle></svg>';
@@ -262,16 +274,46 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.removeItem(sessionKey);
   };
 
+  const getCreatedEvents = () => {
+    try {
+      return JSON.parse(localStorage.getItem(createdEventsKey)) ?? [];
+    } catch {
+      return [];
+    }
+  };
+
+  const setCreatedEvents = (createdEvents) => {
+    localStorage.setItem(createdEventsKey, JSON.stringify(createdEvents));
+  };
+
+  const readFilesAsDataUrls = async (files) => Promise.all(files.map((file) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result ?? ''));
+    reader.onerror = () => reject(reader.error ?? new Error('Não foi possível ler a imagem.'));
+    reader.readAsDataURL(file);
+  })));
+
+  const getAllEvents = () => [...events, ...getCreatedEvents()];
+
+  const getFavoriteStorageKey = (session = getSession()) => {
+    const email = session?.email?.trim().toLowerCase();
+    if (!email) {
+      return guestFavoritesKey;
+    }
+
+    return `${favoritesKey}:${email}`;
+  };
+
   const getFavoriteIds = () => {
     try {
-      return JSON.parse(localStorage.getItem(favoritesKey)) ?? [];
+      return JSON.parse(localStorage.getItem(getFavoriteStorageKey())) ?? [];
     } catch {
       return [];
     }
   };
 
   const setFavoriteIds = (favoriteIds) => {
-    localStorage.setItem(favoritesKey, JSON.stringify(favoriteIds));
+    localStorage.setItem(getFavoriteStorageKey(), JSON.stringify(favoriteIds));
   };
 
   const isFavorite = (eventId) => getFavoriteIds().includes(eventId);
@@ -406,19 +448,55 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const isUpcomingEvent = (event) => getEventDateTime(event) >= Date.now();
 
-  const isPastEvent = (event) => getEventDateTime(event) < Date.now();
+  const isPastEvent = (event) => !event.isRecurring && getEventDateTime(event) < Date.now();
+
+  const getDateBucketForDateTime = (dateTime, isRecurring = false) => {
+    if (isRecurring) {
+      return 'Periódicos';
+    }
+
+    const eventDateKey = getDateKey(new Date(dateTime));
+    const todayKey = getDateKey(new Date());
+
+    if (eventDateKey < todayKey) {
+      return 'Passados';
+    }
+
+    if (eventDateKey === todayKey) {
+      return 'Hoje';
+    }
+
+    if (eventDateKey <= addDaysToKey(todayKey, 6)) {
+      return 'Esta semana';
+    }
+
+    if (isSameMonth(eventDateKey, todayKey)) {
+      return 'Este mês';
+    }
+
+    if (isSameYear(eventDateKey, todayKey)) {
+      return 'Este ano';
+    }
+
+    return 'Este ano';
+  };
+
+  const formatRecurringLabel = (days, timeValue) => {
+    const dayLabel = days.length > 0 ? days.join(', ') : 'Dias por definir';
+    return `${dayLabel} às ${timeValue}`;
+  };
 
   const getListingEvents = () => {
     if (pageType === 'favorites') {
       return getFavoriteIds()
-        .map((favoriteId) => events.find((event) => event.id === favoriteId))
+        .map((favoriteId) => getAllEvents().find((event) => event.id === favoriteId))
         .filter(Boolean);
     }
 
-    return [...events];
+    return getAllEvents();
   };
 
-  const getEventById = (eventId) => events.find((event) => event.id === eventId) ?? null;
+  const getEventById = (eventId) => getAllEvents().find((event) => event.id === eventId) ?? null;
 
   const getEventDetailUrl = (eventId) => `event.html?id=${encodeURIComponent(eventId)}`;
 
@@ -498,7 +576,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const relatedEvents = events
+    const relatedEvents = getAllEvents()
       .filter((item) => item.id !== event.id)
       .filter((item) => item.category === event.category || getEventDistrict(item) === getEventDistrict(event))
       .slice(0, 3);
@@ -516,10 +594,9 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
 
           <div class="topbar-actions">
-            <span class="account-chip" id="accountChip" hidden></span>
+            <a class="account-chip" id="accountChip" href="profile.html" hidden></a>
             <a class="favorites-btn" href="favorites.html" aria-label="Favoritos">
               <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.6-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.4-7 10-7 10Z"></path></svg>
-              Favoritos
             </a>
             <a class="login-btn" id="loginToggleBtn" href="login.html">
               <svg viewBox="0 0 24 24"><path d="M10 17l5-5-5-5"></path><path d="M15 12H4"></path><path d="M20 4v16"></path></svg>
@@ -573,7 +650,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <strong class="event-detail-price ${event.priceType === 'Gratuito' ? 'free' : ''}">${event.priceLabel}</strong>
               </div>
 
-              <a class="event-detail-action primary" href="#" role="button">Ver Bilhetes</a>
+              <a class="event-detail-action primary" href="${event.ticketUrl ?? '#'}" ${event.ticketUrl ? 'target="_blank" rel="noopener noreferrer"' : ''}>Ver Bilhetes</a>
               <button class="event-detail-action secondary" type="button">Guardar Evento</button>
             </aside>
           </section>
@@ -585,6 +662,21 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
           </section>
         </main>
+
+        <nav class="mobile-bottom-nav" aria-label="Navegação inferior">
+          <a class="active" href="index.html#inicio">
+            <svg viewBox="0 0 24 24"><path d="M4 11.5 12 4l8 7.5"></path><path d="M6 10.5V20h12v-9.5"></path></svg>
+            Início
+          </a>
+          <a href="favorites.html">
+            <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.6-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.4-7 10-7 10Z"></path></svg>
+            Favoritos
+          </a>
+          <a href="profile.html">
+            <svg viewBox="0 0 24 24"><path d="M4 20c1.8-4 4.9-6 8-6s6.2 2 8 6"></path><circle cx="12" cy="8" r="4"></circle></svg>
+            Perfil
+          </a>
+        </nav>
       </div>
     `;
 
@@ -767,7 +859,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ].join('\n');
 
     const shareEvent = async (eventId) => {
-      const eventToShare = events.find((item) => item.id === eventId);
+      const eventToShare = getAllEvents().find((item) => item.id === eventId);
       if (!eventToShare) {
         return;
       }
@@ -845,7 +937,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       if (selectedDate === 'Passados') {
-        return eventDateKey < todayKey;
+        return !event.isRecurring && eventDateKey < todayKey;
       }
 
       if (selectedDate === 'Periódicos') {
@@ -882,6 +974,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const sourceEvents = getListingEvents();
       const filtered = sourceEvents.filter((event) => {
+        if (pageType !== 'favorites' && selectedDate !== 'Passados' && isPastEvent(event)) {
+          return false;
+        }
+
         const matchesQuery = !query || [event.title, event.category, event.location, event.dateLabel, event.priceLabel].join(' ').toLowerCase().includes(query);
         const matchesCategory = selectedCategory === 'Todos' || event.category === selectedCategory;
         const matchesDate = matchesDateFilter(event, selectedDate);
@@ -1107,6 +1203,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const authMessage = document.getElementById('authMessage');
     const backHomeBtn = document.getElementById('backHomeBtn');
+    const createAccountBtn = document.getElementById('createAccountBtn');
     const emailInput = document.getElementById('emailInput');
     const passwordInput = document.getElementById('passwordInput');
 
@@ -1152,6 +1249,12 @@ document.addEventListener('DOMContentLoaded', () => {
       backHomeBtn.addEventListener('click', () => {
         clearSession();
         window.location.href = 'index.html';
+      });
+    }
+
+    if (createAccountBtn) {
+      createAccountBtn.addEventListener('click', () => {
+        updateAuthMessage('A criação de conta ainda não está disponível nesta versão.');
       });
     }
   };
@@ -1389,6 +1492,45 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       ];
 
+      const getOrganizerCreatedEvents = () => getCreatedEvents().filter((event) => event.organizerEmail === session.email);
+
+      const formatOrganizerDateLabel = (dateValue, timeValue) => {
+        const parsedDate = new Date(`${dateValue}T${timeValue || '20:00'}:00`);
+        return new Intl.DateTimeFormat('pt-PT', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        }).format(parsedDate) + (timeValue ? ` às ${timeValue}` : '');
+      };
+
+      const renderOrganizerTable = () => {
+        const tableBody = document.getElementById('organizerTableBody');
+        if (!tableBody) {
+          return;
+        }
+
+        const createdEvents = getOrganizerCreatedEvents();
+        const combinedEvents = [...createdEvents, ...organizerEvents];
+
+        tableBody.innerHTML = combinedEvents.map((event) => `
+          <tr>
+            <td class="organizer-event-title">${event.title}</td>
+            <td>${event.category}</td>
+            <td>${event.date ?? event.dateLabel ?? ''}</td>
+            <td>${event.location}</td>
+            <td><span class="organizer-badge ${event.status ?? 'published'}">${event.statusLabel ?? 'Publicado'}</span></td>
+            <td><span class="organizer-metric"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7Z"></path></svg>${event.views ?? 0}</span></td>
+            <td>
+              <div class="organizer-actions-cell" aria-label="Ações do evento">
+                <button type="button" class="icon-btn" aria-label="Ver evento"><svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+                <button type="button" class="icon-btn" aria-label="Editar evento"><svg viewBox="0 0 24 24"><path d="M4 20h4l10-10a2.5 2.5 0 0 0-4-4L4 16v4Z"></path></svg></button>
+                <button type="button" class="icon-btn" aria-label="Eliminar evento"><svg viewBox="0 0 24 24"><path d="M4 7h16"></path><path d="M9 7V4h6v3"></path><path d="M6 7l1 13h10l1-13"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg></button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+      };
+
       profileRoot.innerHTML = `
         <div class="page">
           <div class="organizer-hero">
@@ -1398,12 +1540,118 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
 
             <div class="organizer-actions">
-              <button class="organizer-primary-btn" type="button">
+              <button class="organizer-primary-btn" id="organizerNewEventBtn" type="button" aria-expanded="false" aria-controls="organizerCreatePanel">
                 <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
                 Novo Evento
               </button>
             </div>
           </div>
+
+          <section class="organizer-create-panel" id="organizerCreatePanel" hidden>
+            <div class="organizer-create-head">
+              <div>
+                <h2>Criação de Evento</h2>
+                <p>Adiciona os dados principais do evento e publica-o na plataforma.</p>
+              </div>
+            </div>
+
+            <form class="organizer-create-form" id="organizerCreateForm">
+              <label>
+                Título do evento
+                <input id="organizerEventTitle" type="text" placeholder="Ex.: Noite de Jazz em Lisboa" required />
+              </label>
+
+              <label>
+                Categoria
+                <select id="organizerEventCategory" required>
+                  <option value="Arte e Exposições">Arte e Exposições</option>
+                  <option value="Bem Estar">Bem Estar</option>
+                  <option value="Cinema">Cinema</option>
+                  <option value="Comédia">Comédia</option>
+                  <option value="Concertos" selected>Concertos</option>
+                  <option value="Dança">Dança</option>
+                  <option value="Festivais">Festivais</option>
+                  <option value="Gastronomia">Gastronomia</option>
+                  <option value="Literatura">Literatura</option>
+                  <option value="Mercados e Feiras">Mercados e Feiras</option>
+                  <option value="Moda">Moda</option>
+                  <option value="Família">Família</option>
+                  <option value="Outros">Outros</option>
+                  <option value="Teatro">Teatro</option>
+                </select>
+              </label>
+
+              <label>
+                Tipo de data
+                <select id="organizerEventDateType" required>
+                  <option value="fixed" selected>Fixa</option>
+                  <option value="recurring">Periódico</option>
+                </select>
+              </label>
+
+              <label class="organizer-date-field" id="organizerFixedDateField">
+                Data
+                <input id="organizerEventDate" type="date" required />
+              </label>
+
+              <label class="organizer-date-field" id="organizerFixedTimeField">
+                Hora
+                <input id="organizerEventTime" type="time" value="20:00" required />
+              </label>
+
+              <fieldset class="organizer-recurring-field" id="organizerRecurringField" hidden>
+                <legend>Periodicidade</legend>
+                <div class="organizer-weekdays" id="organizerWeekdays">
+                  ${weekdayOptions.map((day) => `
+                    <label class="organizer-weekday-chip">
+                      <input type="checkbox" name="organizerRecurringDays" value="${day.value}" />
+                      <span>${day.label}</span>
+                    </label>
+                  `).join('')}
+                </div>
+                <div class="organizer-recurring-time" id="organizerRecurringTimeField">
+                  <span class="organizer-recurring-time-label">Hora</span>
+                  <input id="organizerEventRecurringTime" type="time" value="20:00" />
+                </div>
+              </fieldset>
+
+              <label>
+                Localização
+                <input id="organizerEventLocation" type="text" placeholder="Ex.: Casa da Música, Porto" required />
+              </label>
+
+              <label>
+                Preço
+                <select id="organizerEventPriceType" required>
+                  <option value="Gratuito">Gratuito</option>
+                  <option value="Pago" selected>Pago</option>
+                </select>
+              </label>
+
+              <label class="organizer-price-field" id="organizerPriceValueField">
+                Valor do bilhete
+                <input id="organizerEventPriceValue" type="number" min="0" step="0.5" placeholder="Ex.: 18" />
+              </label>
+
+              <label class="organizer-image-field">
+                Imagens do evento
+                <input id="organizerEventImages" type="file" accept="image/*" multiple required />
+                <span class="organizer-image-hint">A primeira imagem selecionada será usada como vitrine do evento.</span>
+              </label>
+
+              <label>
+                Link para bilhetes
+                <input id="organizerEventTicketUrl" type="url" placeholder="https://..." required />
+              </label>
+
+              <div class="organizer-create-actions">
+                <button class="organizer-create-submit" type="submit">Criar Evento</button>
+                <button class="organizer-create-cancel" type="button" id="organizerCreateCancelBtn">Cancelar</button>
+              </div>
+
+              <p class="organizer-create-message" id="organizerCreateMessage" role="status" aria-live="polite"></p>
+            </form>
+          </section>
 
           <div class="organizer-panel" id="eventos-organizador">
             <table class="organizer-table" aria-label="Lista de eventos do organizador">
@@ -1439,26 +1687,233 @@ document.addEventListener('DOMContentLoaded', () => {
         </a>
       `;
 
-      const tableBody = document.getElementById('organizerTableBody');
-      if (tableBody) {
-        tableBody.innerHTML = organizerEvents.map((event) => `
-          <tr>
-            <td class="organizer-event-title">${event.title}</td>
-            <td>${event.category}</td>
-            <td>${event.date}</td>
-            <td>${event.location}</td>
-            <td><span class="organizer-badge ${event.status}">${event.statusLabel}</span></td>
-            <td><span class="organizer-metric"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7Z"></path></svg>${event.views}</span></td>
-            <td>
-              <div class="organizer-actions-cell" aria-label="Ações do evento">
-                <button type="button" class="icon-btn" aria-label="Ver evento"><svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
-                <button type="button" class="icon-btn" aria-label="Editar evento"><svg viewBox="0 0 24 24"><path d="M4 20h4l10-10a2.5 2.5 0 0 0-4-4L4 16v4Z"></path></svg></button>
-                <button type="button" class="icon-btn" aria-label="Eliminar evento"><svg viewBox="0 0 24 24"><path d="M4 7h16"></path><path d="M9 7V4h6v3"></path><path d="M6 7l1 13h10l1-13"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg></button>
-              </div>
-            </td>
-          </tr>
-        `).join('');
+      const organizerNewEventBtn = document.getElementById('organizerNewEventBtn');
+      const organizerCreatePanel = document.getElementById('organizerCreatePanel');
+      const organizerCreateForm = document.getElementById('organizerCreateForm');
+      const organizerCreateCancelBtn = document.getElementById('organizerCreateCancelBtn');
+      const organizerCreateMessage = document.getElementById('organizerCreateMessage');
+      const organizerEventDateType = document.getElementById('organizerEventDateType');
+      const organizerFixedDateField = document.getElementById('organizerFixedDateField');
+      const organizerFixedTimeField = document.getElementById('organizerFixedTimeField');
+      const organizerRecurringField = document.getElementById('organizerRecurringField');
+      const organizerPriceValueField = document.getElementById('organizerPriceValueField');
+      const organizerEventPriceType = document.getElementById('organizerEventPriceType');
+
+      const organizerEventTitle = document.getElementById('organizerEventTitle');
+      const organizerEventCategory = document.getElementById('organizerEventCategory');
+      const organizerEventDate = document.getElementById('organizerEventDate');
+      const organizerEventTime = document.getElementById('organizerEventTime');
+      const organizerEventRecurringTime = document.getElementById('organizerEventRecurringTime');
+      const organizerRecurringTimeField = document.getElementById('organizerRecurringTimeField');
+      const organizerEventLocation = document.getElementById('organizerEventLocation');
+      const organizerEventPriceValue = document.getElementById('organizerEventPriceValue');
+      const organizerEventImages = document.getElementById('organizerEventImages');
+      const organizerEventTicketUrl = document.getElementById('organizerEventTicketUrl');
+
+      const updateOrganizerCreateVisibility = () => {
+        const isRecurring = organizerEventDateType?.value === 'recurring';
+        if (organizerFixedDateField) {
+          organizerFixedDateField.hidden = isRecurring;
+        }
+        if (organizerFixedTimeField) {
+          organizerFixedTimeField.hidden = isRecurring;
+        }
+        if (organizerRecurringField) {
+          organizerRecurringField.hidden = !isRecurring;
+          organizerRecurringField.classList.toggle('is-hidden', !isRecurring);
+        }
+
+        if (organizerEventDate) {
+          organizerEventDate.required = !isRecurring;
+        }
+
+        if (organizerEventTime) {
+          organizerEventTime.required = !isRecurring;
+        }
+
+        if (organizerEventRecurringTime) {
+          organizerEventRecurringTime.required = isRecurring;
+        }
+
+        const isPaid = organizerEventPriceType?.value === 'Pago';
+        if (organizerPriceValueField) {
+          organizerPriceValueField.hidden = !isPaid;
+        }
+
+        if (organizerEventPriceValue) {
+          organizerEventPriceValue.required = isPaid;
+        }
+      };
+
+      const toggleOrganizerCreatePanel = (shouldOpen = true) => {
+        if (!organizerCreatePanel || !organizerNewEventBtn) {
+          return;
+        }
+
+        organizerCreatePanel.hidden = !shouldOpen;
+        organizerNewEventBtn.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+
+        if (shouldOpen && organizerEventTitle) {
+          organizerEventTitle.focus();
+        }
+      };
+
+      if (organizerNewEventBtn) {
+        organizerNewEventBtn.addEventListener('click', () => {
+          toggleOrganizerCreatePanel(Boolean(organizerCreatePanel?.hidden));
+          updateOrganizerCreateVisibility();
+        });
       }
+
+      if (organizerCreateCancelBtn) {
+        organizerCreateCancelBtn.addEventListener('click', () => {
+          if (organizerCreateForm) {
+            organizerCreateForm.reset();
+          }
+
+          if (organizerCreateMessage) {
+            organizerCreateMessage.textContent = '';
+          }
+
+          updateOrganizerCreateVisibility();
+          toggleOrganizerCreatePanel(false);
+        });
+      }
+
+      organizerEventDateType?.addEventListener('change', updateOrganizerCreateVisibility);
+      organizerEventPriceType?.addEventListener('change', updateOrganizerCreateVisibility);
+
+      if (organizerEventRecurringTime) {
+        organizerEventRecurringTime.addEventListener('click', () => {
+          if (typeof organizerEventRecurringTime.showPicker === 'function') {
+            organizerEventRecurringTime.showPicker();
+            return;
+          }
+
+          organizerEventRecurringTime.focus();
+        });
+      }
+
+      if (organizerCreateForm) {
+        organizerCreateForm.addEventListener('submit', async (event) => {
+          event.preventDefault();
+
+          const title = organizerEventTitle?.value.trim() ?? '';
+          const category = organizerEventCategory?.value ?? 'Outros';
+          const dateType = organizerEventDateType?.value ?? 'fixed';
+          const location = organizerEventLocation?.value.trim() ?? '';
+          const priceType = organizerEventPriceType?.value ?? 'Gratuito';
+          const ticketUrl = organizerEventTicketUrl?.value.trim() ?? '';
+          const imageFiles = Array.from(organizerEventImages?.files ?? []);
+          const selectedRecurringDays = Array.from(document.querySelectorAll('input[name="organizerRecurringDays"]'))
+            .filter((input) => input.checked)
+            .map((input) => input.value);
+
+          if (!title || !location || !ticketUrl || imageFiles.length === 0) {
+            if (organizerCreateMessage) {
+              organizerCreateMessage.textContent = 'Preenche o título, a localização, o link de bilhetes e adiciona pelo menos uma imagem.';
+            }
+            return;
+          }
+
+          let eventDate = new Date();
+          let dateLabel = '';
+          let dateBucket = 'Este ano';
+          let isRecurring = false;
+          let recurringDays = [];
+
+          if (dateType === 'recurring') {
+            isRecurring = true;
+            const recurringTime = organizerEventRecurringTime?.value || '20:00';
+            recurringDays = selectedRecurringDays;
+            if (recurringDays.length === 0) {
+              if (organizerCreateMessage) {
+                organizerCreateMessage.textContent = 'Escolhe pelo menos um dia da semana para a periodicidade.';
+              }
+              return;
+            }
+
+            dateLabel = formatRecurringLabel(recurringDays, recurringTime);
+            dateBucket = 'Periódicos';
+            const recurringReference = new Date();
+            eventDate = new Date(`${getDateKey(recurringReference)}T${recurringTime}:00`);
+          } else {
+            const dateValue = organizerEventDate?.value;
+            const timeValue = organizerEventTime?.value || '20:00';
+            if (!dateValue) {
+              if (organizerCreateMessage) {
+                organizerCreateMessage.textContent = 'Seleciona uma data válida para o evento.';
+              }
+              return;
+            }
+
+            eventDate = new Date(`${dateValue}T${timeValue}:00`);
+            dateLabel = formatOrganizerDateLabel(dateValue, timeValue);
+            dateBucket = getDateBucketForDateTime(eventDate.getTime());
+          }
+
+          let imageUrls = [];
+          try {
+            imageUrls = await readFilesAsDataUrls(imageFiles);
+          } catch {
+            if (organizerCreateMessage) {
+              organizerCreateMessage.textContent = 'Não foi possível ler uma das imagens selecionadas.';
+            }
+            return;
+          }
+
+          const newEvent = {
+            id: `event-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            title,
+            category,
+            dateLabel,
+            dateBucket,
+            eventDate: eventDate.toISOString(),
+            location,
+            city: getDistrictKey(location) ?? '',
+            priceLabel: priceType === 'Pago' ? `€${Number(organizerEventPriceValue?.value || 0).toFixed(0)}` : 'Entrada Gratuita',
+            priceType,
+            views: 0,
+            image: imageUrls[0],
+            images: imageUrls,
+            isRecurring,
+            recurringDays,
+            ticketUrl,
+            organizerEmail: session.email,
+            description: 'Evento criado através do painel do organizador.'
+          };
+
+          const updatedEvents = [newEvent, ...getCreatedEvents()];
+          setCreatedEvents(updatedEvents);
+
+          if (organizerCreateMessage) {
+            organizerCreateMessage.textContent = 'Evento criado com sucesso.';
+          }
+
+          organizerCreateForm.reset();
+          if (organizerEventPriceType) {
+            organizerEventPriceType.value = 'Pago';
+          }
+          if (organizerEventDateType) {
+            organizerEventDateType.value = 'fixed';
+          }
+          if (organizerEventTime) {
+            organizerEventTime.value = '20:00';
+          }
+          if (organizerEventRecurringTime) {
+            organizerEventRecurringTime.value = '20:00';
+          }
+          organizerCreateForm.querySelectorAll('input[name="organizerRecurringDays"]')?.forEach((input) => {
+            input.checked = false;
+          });
+
+          updateOrganizerCreateVisibility();
+          renderOrganizerTable();
+        });
+      }
+
+      updateOrganizerCreateVisibility();
+      renderOrganizerTable();
 
       return;
     }
