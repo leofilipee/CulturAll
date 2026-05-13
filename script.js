@@ -185,6 +185,13 @@ document.addEventListener('DOMContentLoaded', () => {
       accountType: 'organizador',
       roleLabel: 'Organizador',
       name: 'João Almeida'
+    },
+    {
+      email: 'admin@culturall.pt',
+      password: 'admin123',
+      accountType: 'admin',
+      roleLabel: 'Administrador',
+      name: 'Admin Cultur\'All'
     }
   ];
 
@@ -274,9 +281,25 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.removeItem(sessionKey);
   };
 
+  const getEventStatusLabel = (status) => {
+    if (status === 'hidden') {
+      return 'Oculto';
+    }
+
+    if (status === 'pending') {
+      return 'Pendente';
+    }
+
+    return 'Publicado';
+  };
+
   const getCreatedEvents = () => {
     try {
-      return JSON.parse(localStorage.getItem(createdEventsKey)) ?? [];
+      return (JSON.parse(localStorage.getItem(createdEventsKey)) ?? []).map((event) => ({
+        ...event,
+        status: event.status ?? 'pending',
+        statusLabel: event.statusLabel ?? getEventStatusLabel(event.status ?? 'pending')
+      }));
     } catch {
       return [];
     }
@@ -294,6 +317,8 @@ document.addEventListener('DOMContentLoaded', () => {
   })));
 
   const getAllEvents = () => [...events, ...getCreatedEvents()];
+
+  const getVisibleEvents = () => getAllEvents().filter((event) => (event.status ?? 'published') === 'published');
 
   const getFavoriteStorageKey = (session = getSession()) => {
     const email = session?.email?.trim().toLowerCase();
@@ -489,11 +514,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const getListingEvents = () => {
     if (pageType === 'favorites') {
       return getFavoriteIds()
-        .map((favoriteId) => getAllEvents().find((event) => event.id === favoriteId))
+        .map((favoriteId) => getVisibleEvents().find((event) => event.id === favoriteId))
         .filter(Boolean);
     }
 
-    return getAllEvents();
+    return getVisibleEvents();
   };
 
   const getEventById = (eventId) => getAllEvents().find((event) => event.id === eventId) ?? null;
@@ -576,7 +601,8 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const relatedEvents = getAllEvents()
+    const session = getSession();
+    const relatedEvents = getVisibleEvents()
       .filter((item) => item.id !== event.id)
       .filter((item) => item.category === event.category || getEventDistrict(item) === getEventDistrict(event))
       .slice(0, 3);
@@ -668,10 +694,12 @@ document.addEventListener('DOMContentLoaded', () => {
             <svg viewBox="0 0 24 24"><path d="M4 11.5 12 4l8 7.5"></path><path d="M6 10.5V20h12v-9.5"></path></svg>
             Início
           </a>
+          ${session?.accountType === 'admin' ? '' : `
           <a href="favorites.html">
             <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.6-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.4-7 10-7 10Z"></path></svg>
             Favoritos
           </a>
+          `}
           <a href="profile.html">
             <svg viewBox="0 0 24 24"><path d="M4 20c1.8-4 4.9-6 8-6s6.2 2 8 6"></path><circle cx="12" cy="8" r="4"></circle></svg>
             Perfil
@@ -735,6 +763,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const renderListingPage = () => {
     const cardsGrid = document.getElementById('cardsGrid');
     if (!cardsGrid) {
+      return;
+    }
+
+    const session = getSession();
+    if (pageType === 'favorites' && !session) {
+      window.location.href = 'login.html';
       return;
     }
 
@@ -831,13 +865,21 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      loginToggleBtn.hidden = false;
       loginToggleBtn.replaceChildren();
       loginToggleBtn.insertAdjacentHTML('afterbegin', session ? iconLogout : iconLogin);
       loginToggleBtn.append(document.createTextNode(session ? 'Sair' : 'Entrar'));
 
       if (session) {
         accountChip.hidden = false;
+        accountChip.style.display = 'inline-flex';
         accountChip.textContent = `${session.name}`;
+        if (session.accountType === 'admin') {
+          const favoritesBtn = document.querySelector('.favorites-btn');
+          if (favoritesBtn) {
+            favoritesBtn.style.display = 'none';
+          }
+        }
         loginToggleBtn.href = '#';
         loginToggleBtn.setAttribute('aria-label', 'Terminar sessão');
         loginToggleBtn.dataset.logged = 'true';
@@ -845,7 +887,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       accountChip.hidden = true;
+      accountChip.style.display = 'none';
       accountChip.textContent = '';
+      const favoritesBtn = document.querySelector('.favorites-btn');
+      if (favoritesBtn) {
+        favoritesBtn.style.display = '';
+      }
       loginToggleBtn.href = 'login.html';
       loginToggleBtn.setAttribute('aria-label', 'Entrar');
       loginToggleBtn.dataset.logged = 'false';
@@ -1174,6 +1221,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      if (!getSession()) {
+        window.location.href = 'login.html';
+        return;
+      }
+
       toggleFavorite(eventId);
       renderCards();
     });
@@ -1277,11 +1329,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (profileAccountChip) {
       profileAccountChip.textContent = session.name;
+      profileAccountChip.hidden = false;
+      profileAccountChip.style.display = 'inline-flex';
     }
 
     if (profileLogoutBtn) {
       profileLogoutBtn.addEventListener('click', () => {
         clearSession();
+        if (profileAccountChip) {
+          profileAccountChip.hidden = true;
+          profileAccountChip.style.display = 'none';
+          profileAccountChip.textContent = '';
+        }
         window.location.href = 'index.html';
       });
     }
@@ -1385,10 +1444,12 @@ document.addEventListener('DOMContentLoaded', () => {
           <svg viewBox="0 0 24 24"><path d="M4 11.5 12 4l8 7.5"></path><path d="M6 10.5V20h12v-9.5"></path></svg>
           Início
         </a>
+        ${session.accountType === 'admin' ? '' : `
         <a href="favorites.html">
           <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.6-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.4-7 10-7 10Z"></path></svg>
           Favoritos
         </a>
+        `}
         <a class="active" href="profile.html">
           <svg viewBox="0 0 24 24"><path d="M4 20c1.8-4 4.9-6 8-6s6.2 2 8 6"></path><circle cx="12" cy="8" r="4"></circle></svg>
           Perfil
@@ -1457,6 +1518,751 @@ document.addEventListener('DOMContentLoaded', () => {
           }, 1200);
         });
       }
+
+      return;
+    }
+
+    if (session.accountType === 'admin') {
+      const popularCategories = Array.from(
+        getVisibleEvents().reduce((categoryMap, event) => {
+          const categoryName = event.category ?? 'Outros';
+          categoryMap.set(categoryName, (categoryMap.get(categoryName) ?? 0) + 1);
+          return categoryMap;
+        }, new Map()).entries()
+      )
+        .map(([name, count]) => ({ name, count }))
+        .sort((firstCategory, secondCategory) => {
+          if (secondCategory.count !== firstCategory.count) {
+            return secondCategory.count - firstCategory.count;
+          }
+
+          return firstCategory.name.localeCompare(secondCategory.name, 'pt-PT');
+        })
+        .slice(0, 5);
+
+      const adminDashboard = {
+        stats: [
+          { value: '4', label: 'Total de Utilizadores', icon: 'users' },
+          { value: '8', label: 'Eventos Ativos', icon: 'calendar' },
+          { value: '4', label: 'Eventos Pendentes', icon: 'pending' },
+          { value: '3', label: 'Organizadores', icon: 'trend' }
+        ],
+        users: [
+          { name: 'Maria Silva', email: 'maria@example.com', registered: '15/01/2025', events: 12, status: 'Ativo' },
+          { name: 'Ana Costa', email: 'ana@example.com', registered: '20/02/2025', events: 5, status: 'Ativo' },
+          { name: 'Pedro Oliveira', email: 'pedro@example.com', registered: '10/01/2025', events: 3, status: 'Inativo' },
+          { name: 'Sofia Ferreira', email: 'sofia@example.com', registered: '01/03/2026', events: 8, status: 'Ativo' }
+        ],
+        pendingEvents: [
+          { title: 'Workshop de Fotografia de Rua', category: 'Arte e Exposições', date: '10/06/2026', organizer: 'Carlos Mendes', submitted: '08/05/2026' },
+          { title: 'Concerto de Guitarra Clássica', category: 'Música', date: '15/06/2026', organizer: 'João Santos', submitted: '09/05/2026' },
+          { title: 'Festival de Street Food', category: 'Gastronomia', date: '20/06/2026', organizer: 'Carlos Mendes', submitted: '10/05/2026' },
+          { title: 'Exposição de Pintura Moderna', category: 'Arte e Exposições', date: '25/06/2026', organizer: 'Rita Alves', submitted: '07/05/2026' }
+        ],
+        publishedEvents: [
+          { title: 'Festival de Fado de Lisboa', category: 'Música', date: '20/03/2026', organizer: 'CCB - Centro Cultural de Belém' },
+          { title: 'Peça: O Auto da Barca do Inferno', category: 'Teatro', date: '18/03/2026', organizer: 'Teatro Nacional D. Maria II' },
+          { title: 'Exposição: Arte Contemporânea Portuguesa', category: 'Arte e Exposições', date: '15/03/2026', organizer: 'Museu Coleção Berardo' },
+          { title: 'Espetáculo de Dança Contemporânea', category: 'Dança', date: '22/03/2026', organizer: 'Companhia Nacional de Bailado' },
+          { title: 'Festival Primavera Sound', category: 'Festivais', date: '28/03/2026', organizer: 'Primavera Sound' },
+          { title: 'Rota Gastronómica do Alentejo', category: 'Gastronomia', date: '16/03/2026', organizer: 'Turismo do Alentejo' },
+          { title: 'Cinema ao Ar Livre: Clássicos Portugueses', category: 'Cinema', date: '19/03/2026', organizer: 'Câmara Municipal de Lisboa' },
+          { title: 'Noite de Jazz no Porto', category: 'Música', date: '25/03/2026', organizer: 'Hot Clube de Portugal' }
+        ],
+        organizers: [
+          { name: 'João Santos', email: 'joao@example.com', registered: '05/11/2024', created: 15, status: 'Aprovado', action: 'Suspender' },
+          { name: 'Carlos Mendes', email: 'carlos@example.com', registered: '20/01/2025', created: 8, status: 'Aprovado', action: 'Suspender' },
+          { name: 'Rita Alves', email: 'rita@example.com', registered: '10/12/2024', created: 3, status: 'Suspenso', action: 'Aprovar' }
+        ]
+      };
+
+      const adminUsers = adminDashboard.users.map((user) => ({ ...user }));
+      const adminOrganizers = adminDashboard.organizers.map((organizer) => ({ ...organizer }));
+
+      const adminKpiIcons = {
+        users: '<svg viewBox="0 0 24 24"><path d="M4 20c1.8-4 4.9-6 8-6s6.2 2 8 6"></path><circle cx="12" cy="8" r="4"></circle><circle cx="6.5" cy="10" r="2.5"></circle><circle cx="17.5" cy="10" r="2.5"></circle></svg>',
+        calendar: '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"></rect><path d="M8 3v4"></path><path d="M16 3v4"></path><path d="M4 9h16"></path></svg>',
+        pending: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v5l3 2"></path></svg>',
+        trend: '<svg viewBox="0 0 24 24"><path d="m4 16 6-6 4 4 6-6"></path><path d="M20 8h-6"></path></svg>'
+      };
+
+      const adminStatsMarkup = adminDashboard.stats.map((item) => `
+        <article class="admin-kpi-card">
+          <div class="admin-kpi-icon ${item.icon}">${adminKpiIcons[item.icon] ?? ''}</div>
+          <strong>${item.value}</strong>
+          <span>${item.label}</span>
+        </article>
+      `).join('');
+
+      const adminUserProfileModal = document.createElement('div');
+      adminUserProfileModal.className = 'admin-modal';
+      adminUserProfileModal.hidden = true;
+      adminUserProfileModal.innerHTML = `
+        <div class="admin-modal-backdrop" data-admin-modal-close></div>
+        <section class="admin-modal-card" role="dialog" aria-modal="true" aria-labelledby="adminUserModalTitle">
+          <button class="admin-modal-x" type="button" data-admin-modal-close aria-label="Fechar">×</button>
+          <h2 id="adminUserModalTitle">Perfil do Utilizador</h2>
+          <div class="admin-user-profile">
+            <div class="admin-user-avatar" id="adminUserAvatar"></div>
+            <div class="admin-user-profile-info">
+              <div><span>Nome</span><strong id="adminUserName"></strong></div>
+              <div><span>Email</span><strong id="adminUserEmail"></strong></div>
+              <div><span>Data de Registo</span><strong id="adminUserRegistered"></strong></div>
+              <div><span>Eventos Participados</span><strong id="adminUserEvents"></strong></div>
+              <div><span>Estado</span><strong id="adminUserStatus"></strong></div>
+            </div>
+          </div>
+          <button class="admin-modal-close-btn" type="button" data-admin-modal-close>Fechar</button>
+        </section>
+      `;
+
+      const adminOrganizerProfileModal = document.createElement('div');
+      adminOrganizerProfileModal.className = 'admin-modal';
+      adminOrganizerProfileModal.hidden = true;
+      adminOrganizerProfileModal.innerHTML = `
+        <div class="admin-modal-backdrop" data-admin-organizer-close></div>
+        <section class="admin-modal-card" role="dialog" aria-modal="true" aria-labelledby="adminOrganizerModalTitle">
+          <button class="admin-modal-x" type="button" data-admin-organizer-close aria-label="Fechar">×</button>
+          <h2 id="adminOrganizerModalTitle">Perfil do Organizador</h2>
+          <div class="admin-user-profile">
+            <div class="admin-user-avatar" id="adminOrganizerAvatar"></div>
+            <div class="admin-user-profile-info">
+              <div><span>Nome</span><strong id="adminOrganizerName"></strong></div>
+              <div><span>Email</span><strong id="adminOrganizerEmail"></strong></div>
+              <div><span>Data de Registo</span><strong id="adminOrganizerRegistered"></strong></div>
+              <div><span>Eventos Criados</span><strong id="adminOrganizerCreated"></strong></div>
+              <div><span>Estado</span><strong id="adminOrganizerStatus"></strong></div>
+            </div>
+          </div>
+          <button class="admin-modal-close-btn" type="button" data-admin-organizer-close>Fechar</button>
+        </section>
+      `;
+
+      const adminOrganizerActionModal = document.createElement('div');
+      adminOrganizerActionModal.className = 'admin-modal';
+      adminOrganizerActionModal.hidden = true;
+      adminOrganizerActionModal.innerHTML = `
+        <div class="admin-modal-backdrop" data-admin-organizer-action-close></div>
+        <section class="admin-modal-card confirm" role="dialog" aria-modal="true" aria-labelledby="adminOrganizerActionModalTitle">
+          <button class="admin-modal-x" type="button" data-admin-organizer-action-close aria-label="Fechar">×</button>
+          <h2 id="adminOrganizerActionModalTitle">Gerir organizador?</h2>
+          <p id="adminOrganizerActionModalText"></p>
+          <div class="admin-modal-actions">
+            <button class="admin-modal-secondary" type="button" data-admin-organizer-action-close>Cancelar</button>
+            <button class="admin-modal-primary danger" type="button" id="adminOrganizerActionConfirmBtn">Confirmar</button>
+          </div>
+        </section>
+      `;
+
+      const adminDeactivateModal = document.createElement('div');
+      adminDeactivateModal.className = 'admin-modal';
+      adminDeactivateModal.hidden = true;
+      adminDeactivateModal.innerHTML = `
+        <div class="admin-modal-backdrop" data-admin-confirm-close></div>
+        <section class="admin-modal-card confirm" role="dialog" aria-modal="true" aria-labelledby="adminDeactivateModalTitle">
+          <button class="admin-modal-x" type="button" data-admin-confirm-close aria-label="Fechar">×</button>
+          <h2 id="adminDeactivateModalTitle">Inativar conta?</h2>
+          <p id="adminDeactivateModalText"></p>
+          <div class="admin-modal-actions">
+            <button class="admin-modal-secondary" type="button" data-admin-confirm-close>Cancelar</button>
+            <button class="admin-modal-primary danger" type="button" id="adminDeactivateConfirmBtn">Sim, inativar</button>
+          </div>
+        </section>
+      `;
+
+      const adminEventActionModal = document.createElement('div');
+      adminEventActionModal.className = 'admin-modal';
+      adminEventActionModal.hidden = true;
+      adminEventActionModal.innerHTML = `
+        <div class="admin-modal-backdrop" data-admin-event-close></div>
+        <section class="admin-modal-card confirm" role="dialog" aria-modal="true" aria-labelledby="adminEventActionModalTitle">
+          <button class="admin-modal-x" type="button" data-admin-event-close aria-label="Fechar">×</button>
+          <h2 id="adminEventActionModalTitle">Gerir evento?</h2>
+          <p id="adminEventActionModalText"></p>
+          <div class="admin-modal-actions">
+            <button class="admin-modal-secondary" type="button" data-admin-event-close>Cancelar</button>
+            <button class="admin-modal-primary danger" type="button" id="adminEventActionConfirmBtn">Confirmar</button>
+          </div>
+        </section>
+      `;
+
+      profileRoot.innerHTML = `
+        <div class="page admin-page">
+          <div class="admin-hero">
+            <div>
+              <h1>Painel de Administração</h1>
+              <p>Gestão completa da plataforma Cultur'All</p>
+            </div>
+          </div>
+
+          <div class="admin-tabs-shell">
+            <label class="admin-tab-select-wrap" for="adminTabSelect">
+              <span>Secção</span>
+              <select id="adminTabSelect" class="admin-tab-select" aria-label="Selecionar secção da administração">
+                <option value="dashboard">Dashboard</option>
+                <option value="users">Utilizadores</option>
+                <option value="moderation">Moderação de Eventos</option>
+                <option value="organizers">Organizadores</option>
+              </select>
+            </label>
+
+            <div class="admin-tabs" role="tablist" aria-label="Separadores da administração">
+              <button class="admin-tab-btn active" type="button" data-admin-tab="dashboard">Dashboard</button>
+              <button class="admin-tab-btn" type="button" data-admin-tab="users">Utilizadores</button>
+              <button class="admin-tab-btn" type="button" data-admin-tab="moderation">Moderação de Eventos</button>
+              <button class="admin-tab-btn" type="button" data-admin-tab="organizers">Organizadores</button>
+            </div>
+          </div>
+
+          <div class="admin-panels">
+            <section class="admin-panel active" data-admin-pane="dashboard">
+              <div class="admin-kpi-grid">${adminStatsMarkup}</div>
+
+              <div class="admin-section-card">
+                <h2>Categorias Mais Populares</h2>
+                <div class="admin-category-list">
+                  ${popularCategories.map((item, index) => `
+                    <div class="admin-category-row">
+                      <div class="admin-category-rank">${index + 1}</div>
+                      <strong>${item.name}</strong>
+                      <span>${item.count} evento${item.count > 1 ? 's' : ''}</span>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            </section>
+
+            <section class="admin-panel" data-admin-pane="users">
+              <div class="admin-section-card">
+                <h2>Todos os Utilizadores</h2>
+                <div class="admin-table-wrap">
+                  <table class="admin-table">
+                    <thead>
+                      <tr><th>Nome</th><th>Email</th><th>Data de Registo</th><th>Eventos</th><th>Estado</th><th>Ações</th></tr>
+                    </thead>
+                    <tbody>
+                      ${adminUsers.map((user) => `
+                        <tr>
+                          <td>${user.name}</td>
+                          <td>${user.email}</td>
+                          <td>${user.registered}</td>
+                          <td>${user.events}</td>
+                          <td><span class="admin-pill ${user.status === 'Ativo' ? 'success' : 'danger'}">${user.status}</span></td>
+                          <td>
+                            <div class="admin-actions-group">
+                              <button type="button" class="admin-icon-btn" aria-label="Ver utilizador" data-admin-user-view="${user.email}">
+                                <svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                              </button>
+                              <button type="button" class="admin-icon-btn" aria-label="Inativar utilizador" data-admin-user-deactivate="${user.email}">
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      `).join('')}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+            <section class="admin-panel" data-admin-pane="moderation">
+              <div class="admin-section-card">
+                <h2>Eventos Pendentes de Aprovação</h2>
+                <div class="admin-review-list" data-admin-pending-events></div>
+              </div>
+
+              <div class="admin-section-card">
+                <h2>Eventos Publicados</h2>
+                <div class="admin-table-wrap">
+                  <table class="admin-table">
+                    <thead>
+                      <tr><th>Título</th><th>Categoria</th><th>Data</th><th>Organizador</th><th>Estado</th><th>Ações</th></tr>
+                    </thead>
+                    <tbody data-admin-published-events></tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+            <section class="admin-panel" data-admin-pane="organizers">
+              <div class="admin-section-card">
+                <h2>Organizadores Registados</h2>
+                <div class="admin-table-wrap">
+                  <table class="admin-table">
+                    <thead>
+                      <tr><th>Nome</th><th>Email</th><th>Data de Registo</th><th>Eventos Criados</th><th>Estado</th><th>Ações</th></tr>
+                    </thead>
+                    <tbody data-admin-organizers></tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      `;
+
+      profileRoot.appendChild(adminUserProfileModal);
+      profileRoot.appendChild(adminOrganizerProfileModal);
+      profileRoot.appendChild(adminOrganizerActionModal);
+      profileRoot.appendChild(adminDeactivateModal);
+      profileRoot.appendChild(adminEventActionModal);
+
+      profileMobileNav.innerHTML = `
+        <a href="index.html">
+          <svg viewBox="0 0 24 24"><path d="M4 11.5 12 4l8 7.5"></path><path d="M6 10.5V20h12v-9.5"></path></svg>
+          Início
+        </a>
+        <a href="favorites.html">
+          <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.6-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.4-7 10-7 10Z"></path></svg>
+          Favoritos
+        </a>
+        <a class="active" href="profile.html">
+          <svg viewBox="0 0 24 24"><path d="M4 20c1.8-4 4.9-6 8-6s6.2 2 8 6"></path><circle cx="12" cy="8" r="4"></circle></svg>
+          Perfil
+        </a>
+      `;
+
+      const tabButtons = Array.from(document.querySelectorAll('[data-admin-tab]'));
+      const panes = Array.from(document.querySelectorAll('[data-admin-pane]'));
+      const adminTabSelect = document.getElementById('adminTabSelect');
+      const adminUserAvatar = document.getElementById('adminUserAvatar');
+      const adminUserName = document.getElementById('adminUserName');
+      const adminUserEmail = document.getElementById('adminUserEmail');
+      const adminUserRegistered = document.getElementById('adminUserRegistered');
+      const adminUserEvents = document.getElementById('adminUserEvents');
+      const adminUserStatus = document.getElementById('adminUserStatus');
+      const adminDeactivateModalTitle = document.getElementById('adminDeactivateModalTitle');
+      const adminDeactivateModalText = document.getElementById('adminDeactivateModalText');
+      const adminDeactivateConfirmBtn = document.getElementById('adminDeactivateConfirmBtn');
+      let selectedAdminUserEmail = '';
+      let selectedAdminUserAction = 'deactivate';
+
+      const getAdminUserByEmail = (email) => adminUsers.find((user) => user.email === email) ?? null;
+
+      const closeAdminModal = (modalElement) => {
+        if (!modalElement) {
+          return;
+        }
+
+        modalElement.hidden = true;
+        document.body.style.overflow = '';
+      };
+
+      const openAdminModal = (modalElement) => {
+        if (!modalElement) {
+          return;
+        }
+
+        modalElement.hidden = false;
+        document.body.style.overflow = 'hidden';
+      };
+
+      const renderAdminUsersTable = () => {
+        const tableBody = profileRoot.querySelector('[data-admin-pane="users"] tbody');
+        if (!tableBody) {
+          return;
+        }
+
+        tableBody.innerHTML = adminUsers.map((user) => {
+          const userAction = user.status === 'Ativo'
+            ? {
+                action: 'deactivate',
+                ariaLabel: 'Inativar utilizador',
+                icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>',
+              }
+            : {
+                action: 'activate',
+                ariaLabel: 'Ativar utilizador',
+                icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8M8 12h8"></path></svg>',
+              };
+
+          return `
+          <tr>
+            <td>${user.name}</td>
+            <td>${user.email}</td>
+            <td>${user.registered}</td>
+            <td>${user.events}</td>
+            <td><span class="admin-pill ${user.status === 'Ativo' ? 'success' : 'danger'}">${user.status}</span></td>
+            <td>
+              <div class="admin-actions-group">
+                <button type="button" class="admin-icon-btn" aria-label="Ver utilizador" data-admin-user-view="${user.email}">
+                  <svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+                <button type="button" class="admin-icon-btn" aria-label="${userAction.ariaLabel}" data-admin-user-action="${userAction.action}" data-admin-user-email="${user.email}">
+                  ${userAction.icon}
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+        }).join('');
+      };
+
+      const adminEventActionModalTitle = adminEventActionModal.querySelector('#adminEventActionModalTitle');
+      const adminEventActionModalText = adminEventActionModal.querySelector('#adminEventActionModalText');
+      const adminEventActionConfirmBtn = adminEventActionModal.querySelector('#adminEventActionConfirmBtn');
+      const adminPendingEventsContainer = profileRoot.querySelector('[data-admin-pending-events]');
+      const adminPublishedEventsTableBody = profileRoot.querySelector('[data-admin-published-events]');
+      const adminOrganizerAvatar = adminOrganizerProfileModal.querySelector('#adminOrganizerAvatar');
+      const adminOrganizerName = adminOrganizerProfileModal.querySelector('#adminOrganizerName');
+      const adminOrganizerEmail = adminOrganizerProfileModal.querySelector('#adminOrganizerEmail');
+      const adminOrganizerRegistered = adminOrganizerProfileModal.querySelector('#adminOrganizerRegistered');
+      const adminOrganizerCreated = adminOrganizerProfileModal.querySelector('#adminOrganizerCreated');
+      const adminOrganizerStatus = adminOrganizerProfileModal.querySelector('#adminOrganizerStatus');
+      const adminOrganizerActionModalTitle = adminOrganizerActionModal.querySelector('#adminOrganizerActionModalTitle');
+      const adminOrganizerActionModalText = adminOrganizerActionModal.querySelector('#adminOrganizerActionModalText');
+      const adminOrganizerActionConfirmBtn = adminOrganizerActionModal.querySelector('#adminOrganizerActionConfirmBtn');
+      const adminOrganizersTableBody = profileRoot.querySelector('[data-admin-organizers]');
+      let selectedAdminOrganizerEmail = '';
+      let selectedAdminOrganizerAction = 'suspend';
+
+      const getAdminEventById = (eventId) => getCreatedEvents().find((event) => event.id === eventId) ?? null;
+      const getAdminOrganizerByEmail = (email) => adminOrganizers.find((organizer) => organizer.email === email) ?? null;
+
+      const getAdminPendingEvents = () => getCreatedEvents().filter((event) => (event.status ?? 'pending') === 'pending');
+
+      const getAdminPublishedEvents = () => getCreatedEvents().filter((event) => ['published', 'hidden'].includes(event.status ?? 'pending'));
+
+      const renderAdminModerationLists = () => {
+        if (adminPendingEventsContainer) {
+          const pendingEvents = getAdminPendingEvents();
+          adminPendingEventsContainer.innerHTML = pendingEvents.length > 0
+            ? pendingEvents.map((event) => `
+                <article class="admin-review-item">
+                  <div>
+                    <strong>${event.title}</strong>
+                    <p>Categoria: ${event.category}</p>
+                    <p>Data do evento: ${event.dateLabel ?? event.date ?? 'A definir'}</p>
+                    <p>Organizador: ${event.organizerName ?? event.organizerEmail ?? 'Organizador'}</p>
+                    <p>Submetido em: ${event.submittedAt ?? 'Pendente'}</p>
+                  </div>
+                  <div class="admin-review-actions">
+                    <button type="button" class="admin-approve-btn" data-admin-event-action="approve" data-admin-event-id="${event.id}">✓ Aprovar</button>
+                    <button type="button" class="admin-reject-btn" data-admin-event-action="reject" data-admin-event-id="${event.id}">✕ Recusar</button>
+                  </div>
+                </article>
+              `).join('')
+            : '<div class="admin-empty-state">Não existem eventos pendentes de aprovação.</div>';
+        }
+
+        if (adminPublishedEventsTableBody) {
+          const publishedEvents = getAdminPublishedEvents();
+          adminPublishedEventsTableBody.innerHTML = publishedEvents.length > 0
+            ? publishedEvents.map((event) => {
+                const status = event.status ?? 'published';
+                const toggleAction = status === 'hidden' ? 'show' : 'hide';
+                const toggleLabel = status === 'hidden' ? 'Mostrar evento' : 'Ocultar evento';
+                const toggleIcon = status === 'hidden'
+                  ? '<svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>'
+                  : '<svg viewBox="0 0 24 24"><path d="M3 3l18 18"></path><path d="M10.6 10.6A3 3 0 0 0 13.4 13.4"></path><path d="M8.2 8.2C5.1 9.8 3 12 3 12s4 7 9 7c1.7 0 3.2-.4 4.6-1.1"></path><path d="M14.1 5.1C15.2 5 16 5 16 5c5 0 9 7 9 7a17.2 17.2 0 0 1-3.5 4.1"></path></svg>';
+
+                return `
+                  <tr>
+                    <td>${event.title}</td>
+                    <td>${event.category}</td>
+                    <td>${event.dateLabel ?? event.date ?? 'A definir'}</td>
+                    <td>${event.organizerName ?? event.organizerEmail ?? 'Organizador'}</td>
+                    <td><span class="admin-pill ${status === 'hidden' ? 'warning' : 'success'}">${getEventStatusLabel(status)}</span></td>
+                    <td>
+                      <div class="admin-actions-group">
+                        <button type="button" class="admin-icon-btn" aria-label="${toggleLabel}" data-admin-event-action="${toggleAction}" data-admin-event-id="${event.id}">${toggleIcon}</button>
+                        <button type="button" class="admin-icon-btn danger" aria-label="Eliminar evento" data-admin-event-action="delete" data-admin-event-id="${event.id}">✕</button>
+                      </div>
+                    </td>
+                  </tr>
+                `;
+              }).join('')
+            : '<tr><td colspan="6"><div class="admin-empty-state">Não existem eventos publicados para gerir.</div></td></tr>';
+        }
+      };
+
+      const renderAdminOrganizersTable = () => {
+        if (!adminOrganizersTableBody) {
+          return;
+        }
+
+        adminOrganizersTableBody.innerHTML = adminOrganizers.map((organizer) => {
+          const isActive = organizer.status === 'Aprovado';
+          const organizerAction = isActive
+            ? {
+                action: 'suspend',
+                ariaLabel: 'Suspender organizador',
+                icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>',
+              }
+            : {
+                action: 'activate',
+                ariaLabel: 'Ativar organizador',
+                icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8M8 12h8"></path></svg>',
+              };
+
+          return `
+            <tr>
+              <td>${organizer.name}</td>
+              <td>${organizer.email}</td>
+              <td>${organizer.registered}</td>
+              <td>${organizer.created}</td>
+              <td><span class="admin-pill ${isActive ? 'success' : 'danger'}">${organizer.status}</span></td>
+              <td>
+                <div class="admin-actions-group">
+                  <button type="button" class="admin-icon-btn" aria-label="Ver organizador" data-admin-organizer-view="${organizer.email}">
+                    <svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  </button>
+                  <button type="button" class="admin-icon-btn" aria-label="${organizerAction.ariaLabel}" data-admin-organizer-action="${organizerAction.action}" data-admin-organizer-email="${organizer.email}">${organizerAction.icon}</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      };
+
+      const openAdminEventAction = (eventId, action) => {
+        const event = getAdminEventById(eventId);
+        if (!event || !adminEventActionModalTitle || !adminEventActionModalText || !adminEventActionConfirmBtn) {
+          return;
+        }
+
+        selectedAdminEventId = eventId;
+        selectedAdminEventAction = action;
+
+        if (action === 'approve') {
+          adminEventActionModalTitle.textContent = 'Aprovar evento?';
+          adminEventActionModalText.textContent = `Pretendes aprovar o evento ${event.title} para que fique visível na home?`;
+          adminEventActionConfirmBtn.textContent = 'Sim, aprovar';
+        } else if (action === 'reject') {
+          adminEventActionModalTitle.textContent = 'Recusar evento?';
+          adminEventActionModalText.textContent = `Pretendes recusar o evento ${event.title}? Ele será removido da moderação.`;
+          adminEventActionConfirmBtn.textContent = 'Sim, recusar';
+        } else if (action === 'hide') {
+          adminEventActionModalTitle.textContent = 'Ocultar evento?';
+          adminEventActionModalText.textContent = `Pretendes ocultar o evento ${event.title} da plataforma?`;
+          adminEventActionConfirmBtn.textContent = 'Sim, ocultar';
+        } else if (action === 'show') {
+          adminEventActionModalTitle.textContent = 'Mostrar evento?';
+          adminEventActionModalText.textContent = `Pretendes voltar a mostrar o evento ${event.title} na plataforma?`;
+          adminEventActionConfirmBtn.textContent = 'Sim, mostrar';
+        } else {
+          adminEventActionModalTitle.textContent = 'Eliminar evento?';
+          adminEventActionModalText.textContent = `Pretendes eliminar definitivamente o evento ${event.title} da plataforma?`;
+          adminEventActionConfirmBtn.textContent = 'Sim, eliminar';
+        }
+
+        openAdminModal(adminEventActionModal);
+      };
+
+      const openAdminOrganizerProfile = (organizerEmail) => {
+        const organizer = getAdminOrganizerByEmail(organizerEmail);
+        if (!organizer || !adminOrganizerAvatar || !adminOrganizerName || !adminOrganizerEmail || !adminOrganizerRegistered || !adminOrganizerCreated || !adminOrganizerStatus) {
+          return;
+        }
+
+        adminOrganizerAvatar.textContent = organizer.name.split(' ').filter(Boolean).slice(0, 2).map((part) => part.charAt(0)).join('').toUpperCase();
+        adminOrganizerName.textContent = organizer.name;
+        adminOrganizerEmail.textContent = organizer.email;
+        adminOrganizerRegistered.textContent = organizer.registered;
+        adminOrganizerCreated.textContent = String(organizer.created);
+        adminOrganizerStatus.textContent = organizer.status;
+        openAdminModal(adminOrganizerProfileModal);
+      };
+
+      const openAdminOrganizerAction = (organizerEmail) => {
+        const organizer = getAdminOrganizerByEmail(organizerEmail);
+        if (!organizer || !adminOrganizerActionModalTitle || !adminOrganizerActionModalText || !adminOrganizerActionConfirmBtn) {
+          return;
+        }
+
+        selectedAdminOrganizerEmail = organizerEmail;
+        if (organizer.status === 'Aprovado') {
+          selectedAdminOrganizerAction = 'suspend';
+          adminOrganizerActionModalTitle.textContent = 'Suspender organizador?';
+          adminOrganizerActionModalText.textContent = `Pretendes suspender o organizador ${organizer.name}?`;
+          adminOrganizerActionConfirmBtn.textContent = 'Sim, suspender';
+        } else {
+          selectedAdminOrganizerAction = 'activate';
+          adminOrganizerActionModalTitle.textContent = 'Ativar organizador?';
+          adminOrganizerActionModalText.textContent = `Pretendes reativar o organizador ${organizer.name}?`;
+          adminOrganizerActionConfirmBtn.textContent = 'Sim, ativar';
+        }
+
+        openAdminModal(adminOrganizerActionModal);
+      };
+
+      const applyAdminOrganizerAction = () => {
+        const organizer = getAdminOrganizerByEmail(selectedAdminOrganizerEmail);
+        if (!organizer) {
+          closeAdminModal(adminOrganizerActionModal);
+          return;
+        }
+
+        organizer.status = selectedAdminOrganizerAction === 'activate' ? 'Aprovado' : 'Suspenso';
+        organizer.action = organizer.status === 'Aprovado' ? 'Suspender' : 'Aprovar';
+        renderAdminOrganizersTable();
+        closeAdminModal(adminOrganizerActionModal);
+      };
+
+      const applyAdminEventAction = () => {
+        const event = getAdminEventById(selectedAdminEventId);
+        if (!event) {
+          closeAdminModal(adminEventActionModal);
+          return;
+        }
+
+        if (selectedAdminEventAction === 'reject' || selectedAdminEventAction === 'delete') {
+          setCreatedEvents(getCreatedEvents().filter((item) => item.id !== selectedAdminEventId));
+        } else {
+          const nextStatus = selectedAdminEventAction === 'hide' ? 'hidden' : 'published';
+          setCreatedEvents(getCreatedEvents().map((item) => {
+            if (item.id !== selectedAdminEventId) {
+              return item;
+            }
+
+            return {
+              ...item,
+              status: nextStatus,
+              statusLabel: getEventStatusLabel(nextStatus)
+            };
+          }));
+        }
+
+        renderAdminModerationLists();
+        closeAdminModal(adminEventActionModal);
+      };
+
+      const openAdminUserProfile = (userEmail) => {
+        const user = getAdminUserByEmail(userEmail);
+        if (!user || !adminUserAvatar || !adminUserName || !adminUserEmail || !adminUserRegistered || !adminUserEvents || !adminUserStatus) {
+          return;
+        }
+
+        adminUserAvatar.textContent = user.name.split(' ').filter(Boolean).slice(0, 2).map((part) => part.charAt(0)).join('').toUpperCase();
+        adminUserName.textContent = user.name;
+        adminUserEmail.textContent = user.email;
+        adminUserRegistered.textContent = user.registered;
+        adminUserEvents.textContent = String(user.events);
+        adminUserStatus.textContent = user.status;
+        openAdminModal(adminUserProfileModal);
+      };
+
+      const openDeactivateConfirm = (userEmail) => {
+        const user = getAdminUserByEmail(userEmail);
+        if (!user || !adminDeactivateModalTitle || !adminDeactivateModalText || !adminDeactivateConfirmBtn) {
+          return;
+        }
+
+        selectedAdminUserEmail = userEmail;
+        if (user.status === 'Ativo') {
+          selectedAdminUserAction = 'deactivate';
+          adminDeactivateModalTitle.textContent = 'Inativar conta?';
+          adminDeactivateModalText.textContent = `Pretendes colocar a conta de ${user.name} como inativa?`;
+          adminDeactivateConfirmBtn.textContent = 'Sim, inativar';
+        } else {
+          selectedAdminUserAction = 'activate';
+          adminDeactivateModalTitle.textContent = 'Ativar conta?';
+          adminDeactivateModalText.textContent = `Pretendes reativar a conta de ${user.name}?`;
+          adminDeactivateConfirmBtn.textContent = 'Sim, ativar';
+        }
+
+        openAdminModal(adminDeactivateModal);
+      };
+
+      [adminUserProfileModal, adminOrganizerProfileModal, adminDeactivateModal, adminEventActionModal, adminOrganizerActionModal].forEach((modalElement) => {
+        modalElement?.addEventListener('click', (event) => {
+          const target = event.target;
+          if (!(target instanceof Element)) {
+            return;
+          }
+
+          if (target.closest('[data-admin-modal-close], [data-admin-confirm-close], [data-admin-event-close], [data-admin-organizer-close], [data-admin-organizer-action-close]')) {
+            closeAdminModal(modalElement);
+          }
+        });
+      });
+
+      adminDeactivateConfirmBtn?.addEventListener('click', () => {
+        const user = getAdminUserByEmail(selectedAdminUserEmail);
+        if (!user) {
+          closeAdminModal(adminDeactivateModal);
+          return;
+        }
+
+        user.status = selectedAdminUserAction === 'activate' ? 'Ativo' : 'Inativo';
+        renderAdminUsersTable();
+        closeAdminModal(adminDeactivateModal);
+      });
+
+      adminEventActionConfirmBtn?.addEventListener('click', applyAdminEventAction);
+      adminOrganizerActionConfirmBtn?.addEventListener('click', applyAdminOrganizerAction);
+
+      renderAdminModerationLists();
+      renderAdminOrganizersTable();
+
+      profileRoot.addEventListener('click', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) {
+          return;
+        }
+
+        const viewButton = target.closest('[data-admin-user-view]');
+        if (viewButton) {
+          openAdminUserProfile(viewButton.getAttribute('data-admin-user-view') ?? '');
+          return;
+        }
+
+        const actionButton = target.closest('[data-admin-user-action]');
+        if (actionButton) {
+          openDeactivateConfirm(actionButton.getAttribute('data-admin-user-email') ?? '');
+          return;
+        }
+
+        const eventActionButton = target.closest('[data-admin-event-action][data-admin-event-id]');
+        if (eventActionButton) {
+          openAdminEventAction(
+            eventActionButton.getAttribute('data-admin-event-id') ?? '',
+            eventActionButton.getAttribute('data-admin-event-action') ?? ''
+          );
+          return;
+        }
+
+        const organizerViewButton = target.closest('[data-admin-organizer-view]');
+        if (organizerViewButton) {
+          openAdminOrganizerProfile(organizerViewButton.getAttribute('data-admin-organizer-view') ?? '');
+          return;
+        }
+
+        const organizerActionButton = target.closest('[data-admin-organizer-action]');
+        if (organizerActionButton) {
+          openAdminOrganizerAction(organizerActionButton.getAttribute('data-admin-organizer-email') ?? '');
+        }
+      });
+
+      renderAdminUsersTable();
+
+      const setAdminTab = (tabName) => {
+        const nextTab = tabButtons.find((button) => button.dataset.adminTab === tabName) ?? tabButtons[0];
+        if (!nextTab) {
+          return;
+        }
+
+        tabButtons.forEach((button) => button.classList.toggle('active', button === nextTab));
+        panes.forEach((pane) => pane.classList.toggle('active', pane.dataset.adminPane === nextTab.dataset.adminTab));
+
+        if (adminTabSelect && adminTabSelect.value !== nextTab.dataset.adminTab) {
+          adminTabSelect.value = nextTab.dataset.adminTab;
+        }
+      };
+
+      if (adminTabSelect) {
+        adminTabSelect.value = 'dashboard';
+        adminTabSelect.addEventListener('change', () => {
+          setAdminTab(adminTabSelect.value);
+        });
+      }
+
+      tabButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          setAdminTab(button.dataset.adminTab ?? 'dashboard');
+        });
+      });
 
       return;
     }
@@ -1873,6 +2679,14 @@ document.addEventListener('DOMContentLoaded', () => {
             city: getDistrictKey(location) ?? '',
             priceLabel: priceType === 'Pago' ? `€${Number(organizerEventPriceValue?.value || 0).toFixed(0)}` : 'Entrada Gratuita',
             priceType,
+            status: 'pending',
+            statusLabel: 'Pendente',
+            organizerName: session.name,
+            submittedAt: new Intl.DateTimeFormat('pt-PT', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric'
+            }).format(new Date()),
             views: 0,
             image: imageUrls[0],
             images: imageUrls,
