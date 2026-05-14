@@ -6,7 +6,7 @@ session_start();
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 
-function culturall_env(string $key, string $default = ''): string
+function getenv(string $key, string $default = ''): string
 {
     $value = getenv($key);
     if ($value === false || $value === '') {
@@ -25,11 +25,11 @@ function culturall_pdo(): PDO
     }
 
     // Railway environment variables (primary)
-    $host = culturall_env('MYSQLHOST', culturall_env('DB_HOST', '127.0.0.1'));
-    $database = culturall_env('MYSQLDATABASE', culturall_env('DB_NAME', 'culturall'));
-    $username = culturall_env('MYSQLUSER', culturall_env('DB_USER', 'root'));
-    $password = culturall_env('MYSQLPASSWORD', culturall_env('DB_PASSWORD', 'root'));
-    $port = culturall_env('MYSQLPORT', culturall_env('DB_PORT', '3306'));
+    $host = getenv('MYSQLHOST', getenv('DB_HOST', '127.0.0.1'));
+    $database = getenv('MYSQLDATABASE', getenv('DB_NAME', 'culturall'));
+    $username = getenv('MYSQLUSER', getenv('DB_USER', 'root'));
+    $password = getenv('MYSQLPASSWORD', getenv('DB_PASSWORD', 'root'));
+    $port = getenv('MYSQLPORT', getenv('DB_PORT', '3306'));
 
     $dsn = sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4', $host, $port, $database);
 
