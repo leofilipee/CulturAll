@@ -1177,41 +1177,6 @@ select {
   font-size: 0.92rem;
 }
 
-.test-accounts {
-  margin-top: 8px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(114, 90, 67, 0.14);
-}
-
-.test-accounts-title {
-  margin: 0 0 12px;
-  text-align: center;
-  color: #6f6258;
-  font-size: 0.92rem;
-}
-
-.test-account-card {
-  padding: 10px 12px;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 10px;
-  border: 1px solid rgba(114, 90, 67, 0.08);
-}
-
-.test-account-card + .test-account-card {
-  margin-top: 8px;
-}
-
-.test-account-card strong,
-.test-account-card span {
-  display: block;
-}
-
-.test-account-card span {
-  margin-top: 3px;
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
 .back-home-btn {
   margin-top: 22px;
   width: 100%;

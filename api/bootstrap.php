@@ -24,11 +24,12 @@ function culturall_pdo(): PDO
         return $pdo;
     }
 
-    $host = culturall_env('DB_HOST', '127.0.0.1');
-    $database = culturall_env('DB_NAME', 'culturall');
-    $username = culturall_env('DB_USER', 'root');
-    $password = culturall_env('DB_PASSWORD', 'root');
-    $port = culturall_env('DB_PORT', '3306');
+    // Railway environment variables (primary)
+    $host = culturall_env('MYSQLHOST', culturall_env('DB_HOST', '127.0.0.1'));
+    $database = culturall_env('MYSQLDATABASE', culturall_env('DB_NAME', 'culturall'));
+    $username = culturall_env('MYSQLUSER', culturall_env('DB_USER', 'root'));
+    $password = culturall_env('MYSQLPASSWORD', culturall_env('DB_PASSWORD', 'root'));
+    $port = culturall_env('MYSQLPORT', culturall_env('DB_PORT', '3306'));
 
     $dsn = sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4', $host, $port, $database);
 
@@ -41,7 +42,7 @@ function culturall_pdo(): PDO
     } catch (PDOException $exception) {
         culturall_json_response([
             'ok' => false,
-            'message' => 'Não foi possível ligar à base de dados. Confirma as credenciais DB_HOST, DB_NAME, DB_USER, DB_PASSWORD e DB_PORT.'
+            'message' => 'Não foi possível ligar à base de dados. Confirma as variáveis: MYSQLHOST, MYSQLPORT, MYSQLDATABASE, MYSQLUSER, MYSQLPASSWORD.'
         ], 500);
     }
 

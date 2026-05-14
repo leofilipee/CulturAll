@@ -1,205 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const events = [
-    {
-      id: 1,
-      title: 'Festival de Fado de Lisboa',
-      category: 'Concertos',
-      dateLabel: '20 de março às 21:00',
-      dateBucket: 'Passados',
-      eventDate: '2026-03-20T21:00:00',
-      location: 'Centro Cultural de Belém, Lisboa',
-      city: 'Lisboa',
-      priceLabel: '€25',
-      priceType: 'Pago',
-      views: 842,
-      image: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=80'
-    },
-    {
-      id: 2,
-      title: 'Peça: O Auto da Barca do Inferno',
-      category: 'Teatro',
-      dateLabel: '18 de março às 19:30',
-      dateBucket: 'Passados',
-      eventDate: '2026-03-18T19:30:00',
-      location: 'Teatro Nacional D. Maria II, Lisboa',
-      city: 'Lisboa',
-      priceLabel: '€18',
-      priceType: 'Pago',
-      views: 615,
-      image: 'https://images.unsplash.com/photo-1503095396549-807759245b35?auto=format&fit=crop&w=1200&q=80'
-    },
-    {
-      id: 3,
-      title: 'Exposição: Arte Contemporânea Portuguesa',
-      category: 'Arte e Exposições',
-      dateLabel: '15 de março às 10:00',
-      dateBucket: 'Passados',
-      eventDate: '2026-03-15T10:00:00',
-      location: 'Museu Berardo, Lisboa',
-      city: 'Lisboa',
-      priceLabel: 'Entrada Gratuita',
-      priceType: 'Gratuito',
-      views: 974,
-      image: 'https://images.unsplash.com/photo-1518998053901-5348d3961a04?auto=format&fit=crop&w=1200&q=80'
-    },
-    {
-      id: 4,
-      title: 'Espetáculo de Dança Contemporânea',
-      category: 'Dança',
-      dateLabel: '22 de março às 20:00',
-      dateBucket: 'Passados',
-      eventDate: '2026-03-22T20:00:00',
-      location: 'Casa da Música, Porto',
-      city: 'Porto',
-      priceLabel: '€15',
-      priceType: 'Pago',
-      views: 423,
-      image: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=75'
-    },
-    {
-      id: 5,
-      title: 'Festival Primavera Sound',
-      category: 'Festivais',
-      dateLabel: '28 de março às 16:00',
-      dateBucket: 'Passados',
-      eventDate: '2026-03-28T16:00:00',
-      location: 'Parque da Cidade, Porto',
-      city: 'Porto',
-      priceLabel: '€85',
-      priceType: 'Pago',
-      views: 1188,
-      image: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=70'
-    },
-    {
-      id: 6,
-      title: 'Rota Gastronómica do Alentejo',
-      category: 'Gastronomia',
-      dateLabel: '16 de março às 12:00',
-      dateBucket: 'Passados',
-      eventDate: '2026-03-16T12:00:00',
-      location: 'Évora Centro Histórico, Alentejo',
-      city: 'Évora',
-      priceLabel: '€45',
-      priceType: 'Pago',
-      views: 377,
-      image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80'
-    },
-    {
-      id: 7,
-      title: 'Cinema ao Ar Livre: Clássicos Portugueses',
-      category: 'Cinema',
-      dateLabel: '19 de março às 21:30',
-      dateBucket: 'Passados',
-      eventDate: '2026-03-19T21:30:00',
-      location: 'Jardim da Estrela, Lisboa',
-      city: 'Lisboa',
-      priceLabel: 'Entrada Gratuita',
-      priceType: 'Gratuito',
-      views: 556,
-      image: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&q=80'
-    },
-    {
-      id: 8,
-      title: 'Noite de Jazz no Porto',
-      category: 'Concertos',
-      dateLabel: '25 de março às 22:00',
-      dateBucket: 'Passados',
-      eventDate: '2026-03-25T22:00:00',
-      location: 'Hot Clube de Portugal, Porto',
-      city: 'Porto',
-      priceLabel: '€20',
-      priceType: 'Pago',
-      views: 699,
-      image: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=74'
-    },
-    {
-      id: 9,
-      title: 'Concerto K-Pop',
-      category: 'Família',
-      dateLabel: '25 de abril às 15:00',
-      dateBucket: 'Este mês',
-      eventDate: '2026-04-25T15:00:00',
-      location: 'MEO Arena, Lisboa',
-      city: 'Lisboa',
-      priceLabel: '€30',
-      priceType: 'Pago',
-      views: 901,
-      image: 'img/events/concerto-kpop-meoarena.jpeg'
-    },
-    {
-      id: 10,
-      title: 'Noite do Fado',
-      category: 'Concertos',
-      dateLabel: 'Todas as sextas',
-      dateBucket: 'Periódicos',
-      eventDate: '2026-04-24T21:30:00',
-      location: 'Alfama, Lisboa',
-      city: 'Lisboa',
-      priceLabel: '€18',
-      priceType: 'Pago',
-      views: 775,
-      isRecurring: true,
-      image: 'img/events/noite-de-fado-almada.jpeg'
-    },
-    {
-      id: 11,
-      title: 'Web Summit Lisboa 2026',
-      category: 'Outros',
-      dateLabel: '9-11 de novembro',
-      dateBucket: 'Este ano',
-      eventDate: '2026-11-09T09:00:00',
-      location: 'FIL, Lisboa',
-      city: 'Lisboa',
-      priceLabel: '€390',
-      priceType: 'Pago',
-      views: 1320,
-      image: 'img/events/web-summit-lisboa.jpeg'
-    },
-    {
-      id: 12,
-      title: 'Sol da Caparica 2026',
-      category: 'Festivais',
-      dateLabel: '13-16 de agosto',
-      dateBucket: 'Este ano',
-      eventDate: '2026-08-13T16:00:00',
-      location: 'Costa da Caparica',
-      city: 'Costa da Caparica',
-      priceLabel: '€45',
-      priceType: 'Pago',
-      views: 1104,
-      image: 'img/events/sol-caparica-costadacaparica.jpeg'
-    }
-  ];
-
-  const organizerEvents = [
-    {
-      title: 'Festival de Fado de Lisboa',
-      category: 'Concertos',
-      date: '20/03/2026',
-      location: 'Centro Cultural de Belém',
-      status: 'published',
-      statusLabel: 'Publicado',
-      views: 342
-    },
-    {
-      title: 'Noite de Jazz no Porto',
-      category: 'Concertos',
-      date: '25/03/2026',
-      location: 'Hot Clube de Portugal',
-      status: 'published',
-      statusLabel: 'Publicado',
-      views: 156
-    },
-    {
-      title: 'Workshop de Fotografia',
-      category: 'Arte e Exposições',
-      date: '10/04/2026',
-      location: 'Espaço Chiado',
-      status: 'pending',
-      statusLabel: 'Pendente',
-      views: 0
-    }
-  ];
 
   const weekdayOptions = [
     { value: 'Seg', label: 'Seg' },
@@ -302,25 +101,9 @@ document.addEventListener('DOMContentLoaded', () => {
     source: 'cache'
   };
 
-  const favoriteIdAliases = {
-    'festival-fado-lisboa': '1',
-    'auto-barca-inferno': '2',
-    'arte-contemporanea-portuguesa': '3',
-    'dança-contemporanea': '4',
-    'danca-contemporanea': '4',
-    'primavera-sound': '5',
-    'rota-gastronomica-alentejo': '6',
-    'cinema-ar-livre-classicos': '7',
-    'noite-jazz-porto': '8',
-    'concerto-kpop-meo-arena': '9',
-    'noite-do-fado-alfama': '10',
-    'web-summit-lisboa-2026': '11',
-    'sol-da-caparica-2026': '12'
-  };
-
   let rerenderListingPage = null;
 
-  const normalizeEventId = (value) => favoriteIdAliases[String(value)] ?? String(value);
+  const normalizeEventId = (value) => String(value);
 
   const formatApiDateLabel = (value) => {
     if (!value) {
@@ -449,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const getAllEvents = () => {
     const baseEvents = serverEventsState.loaded && serverEventsState.items.length > 0
       ? serverEventsState.items
-      : events.map(normalizeServerEvent);
+      : [];
 
     return [...baseEvents, ...getCreatedEvents().map(normalizeServerEvent)];
   };
@@ -1776,7 +1559,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (session.accountType === 'lambda') {
-      const selectedEvent = events[4];
       const initials = session.name
         .split(' ')
         .filter(Boolean)
@@ -1784,24 +1566,6 @@ document.addEventListener('DOMContentLoaded', () => {
         .map((part) => part.charAt(0))
         .join('')
         .toUpperCase();
-
-      const historyItems = [
-        {
-          title: 'Festival Primavera Sound',
-          meta: 'Nos favoritos · 28 de março às 16:00',
-          status: 'Confirmado'
-        },
-        {
-          title: 'Exposição: Arte Contemporânea Portuguesa',
-          meta: 'Visitado · 15 de março às 10:00',
-          status: 'Finalizado'
-        },
-        {
-          title: 'Cinema ao Ar Livre: Clássicos Portugueses',
-          meta: 'Marcado como favorito · 19 de março às 21:30',
-          status: 'Pendente'
-        }
-      ];
 
       profileRoot.innerHTML = `
         <div class="page">
@@ -1893,57 +1657,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const tabButtons = Array.from(document.querySelectorAll('[data-profile-tab]'));
       const panes = Array.from(document.querySelectorAll('[data-profile-pane]'));
 
+      // Clear placeholder elements
       if (savedEventCard) {
-        savedEventCard.innerHTML = `
-          <article class="event-card">
-            <div class="event-media">
-              <span class="event-pill">${selectedEvent.category}</span>
-              <button class="favorite-btn${isFavorite(selectedEvent.id) ? ' active' : ''}" type="button" aria-label="${getFavoriteAriaLabel(selectedEvent.id)}" aria-pressed="${isFavorite(selectedEvent.id) ? 'true' : 'false'}" data-event-id="${selectedEvent.id}">
-                <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.6-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.4-7 10-7 10Z"></path></svg>
-              </button>
-              <img src="${selectedEvent.image}" alt="${selectedEvent.title}" loading="lazy" />
-            </div>
-            <div class="event-body">
-              <h2 class="event-title">${selectedEvent.title}</h2>
-              <div class="meta-list">
-                <div class="meta-item">${iconCalendar}<span>${selectedEvent.dateLabel}</span></div>
-                <div class="meta-item">${iconLocation}<span>${selectedEvent.location}</span></div>
-              </div>
-              <div class="price-row">
-                <span class="price ${selectedEvent.priceType === 'Gratuito' ? 'free' : ''}">${selectedEvent.priceLabel}</span>
-                <span class="tagline">Nos favoritos</span>
-              </div>
-            </div>
-          </article>
-        `;
-
-        const savedEventFavoriteBtn = savedEventCard.querySelector('.favorite-btn');
-        if (savedEventFavoriteBtn) {
-          savedEventFavoriteBtn.addEventListener('click', async () => {
-            if (!getSession()) {
-              window.location.href = 'login.html';
-              return;
-            }
-
-            await toggleFavorite(selectedEvent.id);
-            const isEventFavorite = isFavorite(selectedEvent.id);
-            savedEventFavoriteBtn.classList.toggle('active', isEventFavorite);
-            savedEventFavoriteBtn.setAttribute('aria-label', getFavoriteAriaLabel(selectedEvent.id));
-            savedEventFavoriteBtn.setAttribute('aria-pressed', String(isEventFavorite));
-          });
-        }
+        savedEventCard.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">Nenhum evento nos favoritos neste momento</p>';
       }
 
       if (historyList) {
-        historyList.innerHTML = historyItems.map((item) => `
-          <div class="profile-history-item">
-            <div class="profile-history-meta">
-              <strong>${item.title}</strong>
-              <span>${item.meta}</span>
-            </div>
-            <span class="status-badge">${item.status}</span>
-          </div>
-        `).join('');
+        historyList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">Nenhuma atividade registada</p>';
       }
 
       tabButtons.forEach((button) => {
@@ -2844,36 +2564,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (session.accountType === 'organizador') {
-      const organizerEvents = [
-        {
-          title: 'Festival de Fado de Lisboa',
-          category: 'Concertos',
-          date: '20/03/2026',
-          location: 'Centro Cultural de Belém',
-          status: 'published',
-          statusLabel: 'Publicado',
-          views: 342
-        },
-        {
-          title: 'Noite de Jazz no Porto',
-          category: 'Concertos',
-          date: '25/03/2026',
-          location: 'Hot Clube de Portugal',
-          status: 'published',
-          statusLabel: 'Publicado',
-          views: 156
-        },
-        {
-          title: 'Workshop de Fotografia',
-          category: 'Arte e Exposições',
-          date: '10/04/2026',
-          location: 'Espaço Chiado',
-          status: 'pending',
-          statusLabel: 'Pendente',
-          views: 0
-        }
-      ];
-
       const getOrganizerCreatedEvents = () => getCreatedEvents().filter((event) => event.organizerEmail === session.email);
 
       const formatOrganizerDateLabel = (dateValue, timeValue) => {
@@ -2892,9 +2582,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const createdEvents = getOrganizerCreatedEvents();
-        const combinedEvents = [...createdEvents, ...organizerEvents];
 
-        tableBody.innerHTML = combinedEvents.map((event) => `
+        tableBody.innerHTML = createdEvents.map((event) => `
           <tr>
             <td class="organizer-event-title">${event.title}</td>
             <td>${event.category}</td>
