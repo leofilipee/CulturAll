@@ -21,17 +21,14 @@ function culturall_env(string $key, string $default = ''): string
 function culturall_pdo(): PDO
 {
     static $pdo = null;
+    if ($pdo instanceof PDO) return $pdo;
 
-    if ($pdo instanceof PDO) {
-        return $pdo;
-    }
-
-    // Agora usamos a nossa nova função culturall_env
-    $host     = culturall_env('MYSQLHOST', culturall_env('DB_HOST', '127.0.0.1'));
-    $database = culturall_env('MYSQLDATABASE', culturall_env('DB_NAME', 'culturall'));
-    $username = culturall_env('MYSQLUSER', culturall_env('DB_USER', 'root'));
-    $password = culturall_env('MYSQLPASSWORD', culturall_env('DB_PASSWORD', 'root'));
-    $port     = culturall_env('MYSQLPORT', culturall_env('DB_PORT', '3306'));
+    // Dados DIRETOS do teu MySQL no Railway (Public Network)
+    $host     = 'yamanote.proxy.rlwy.net'; 
+    $port     = '43442'; 
+    $database = 'railway';
+    $username = 'root';
+    $password = 'NwvKNhLZjqFCNedDtWkNuSbMmSSsdELS';
 
     $dsn = sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4', $host, $port, $database);
 
@@ -39,16 +36,12 @@ function culturall_pdo(): PDO
         $pdo = new PDO($dsn, $username, $password, [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES => false,
         ]);
-    } catch (PDOException $exception) {
-        culturall_json_response([
-            'ok' => false,
-            'message' => 'Não foi possível ligar à base de dados. Confirma as variáveis: MYSQLHOST, MYSQLPORT, MYSQLDATABASE, MYSQLUSER, MYSQLPASSWORD.'
-        ], 500);
+        return $pdo;
+    } catch (PDOException $e) {
+        // Isto vai mostrar o erro real no ecrã para sabermos o que se passa
+        die("Erro específico: " . $e->getMessage());
     }
-
-    return $pdo;
 }
 
 function culturall_json_response(array $payload, int $statusCode = 200): never
