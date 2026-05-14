@@ -2,9 +2,9 @@
 -- Cultur'All — Ficheiro 1: Criação da Base de Dados
 -- ============================================================
 
-DROP DATABASE IF EXISTS culturall;
-CREATE DATABASE culturall CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE culturall;
+-- DROP DATABASE IF EXISTS culturall;
+-- CREATE DATABASE culturall CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- USE culturall;
 
 -- ------------------------------------------------------------
 -- Tabela: tipoutilizador

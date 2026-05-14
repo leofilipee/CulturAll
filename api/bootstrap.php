@@ -6,8 +6,10 @@ session_start();
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 
-function getenv(string $key, string $default = ''): string
+// Nome alterado para evitar conflito com a função nativa do PHP
+function culturall_env(string $key, string $default = ''): string
 {
+    // Usamos a função nativa getenv() do PHP aqui dentro
     $value = getenv($key);
     if ($value === false || $value === '') {
         return $default;
@@ -24,12 +26,12 @@ function culturall_pdo(): PDO
         return $pdo;
     }
 
-    // Railway environment variables (primary)
-    $host = getenv('MYSQLHOST', getenv('DB_HOST', '127.0.0.1'));
-    $database = getenv('MYSQLDATABASE', getenv('DB_NAME', 'culturall'));
-    $username = getenv('MYSQLUSER', getenv('DB_USER', 'root'));
-    $password = getenv('MYSQLPASSWORD', getenv('DB_PASSWORD', 'root'));
-    $port = getenv('MYSQLPORT', getenv('DB_PORT', '3306'));
+    // Agora usamos a nossa nova função culturall_env
+    $host     = culturall_env('MYSQLHOST', culturall_env('DB_HOST', '127.0.0.1'));
+    $database = culturall_env('MYSQLDATABASE', culturall_env('DB_NAME', 'culturall'));
+    $username = culturall_env('MYSQLUSER', culturall_env('DB_USER', 'root'));
+    $password = culturall_env('MYSQLPASSWORD', culturall_env('DB_PASSWORD', 'root'));
+    $port     = culturall_env('MYSQLPORT', culturall_env('DB_PORT', '3306'));
 
     $dsn = sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4', $host, $port, $database);
 
