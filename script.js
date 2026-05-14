@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const events = [
     {
-      id: 'festival-fado-lisboa',
+      id: 1,
       title: 'Festival de Fado de Lisboa',
       category: 'Concertos',
       dateLabel: '20 de março às 21:00',
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
       image: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=80'
     },
     {
-      id: 'auto-barca-inferno',
+      id: 2,
       title: 'Peça: O Auto da Barca do Inferno',
       category: 'Teatro',
       dateLabel: '18 de março às 19:30',
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
       image: 'https://images.unsplash.com/photo-1503095396549-807759245b35?auto=format&fit=crop&w=1200&q=80'
     },
     {
-      id: 'arte-contemporanea-portuguesa',
+      id: 3,
       title: 'Exposição: Arte Contemporânea Portuguesa',
       category: 'Arte e Exposições',
       dateLabel: '15 de março às 10:00',
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
       image: 'https://images.unsplash.com/photo-1518998053901-5348d3961a04?auto=format&fit=crop&w=1200&q=80'
     },
     {
-      id: 'dança-contemporanea',
+      id: 4,
       title: 'Espetáculo de Dança Contemporânea',
       category: 'Dança',
       dateLabel: '22 de março às 20:00',
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
       image: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=75'
     },
     {
-      id: 'primavera-sound',
+      id: 5,
       title: 'Festival Primavera Sound',
       category: 'Festivais',
       dateLabel: '28 de março às 16:00',
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
       image: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=70'
     },
     {
-      id: 'rota-gastronomica-alentejo',
+      id: 6,
       title: 'Rota Gastronómica do Alentejo',
       category: 'Gastronomia',
       dateLabel: '16 de março às 12:00',
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
       image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80'
     },
     {
-      id: 'cinema-ar-livre-classicos',
+      id: 7,
       title: 'Cinema ao Ar Livre: Clássicos Portugueses',
       category: 'Cinema',
       dateLabel: '19 de março às 21:30',
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
       image: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&q=80'
     },
     {
-      id: 'noite-jazz-porto',
+      id: 8,
       title: 'Noite de Jazz no Porto',
       category: 'Concertos',
       dateLabel: '25 de março às 22:00',
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
       image: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=74'
     },
     {
-      id: 'concerto-kpop-meo-arena',
+      id: 9,
       title: 'Concerto K-Pop',
       category: 'Família',
       dateLabel: '25 de abril às 15:00',
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
       image: 'img/events/concerto-kpop-meoarena.jpeg'
     },
     {
-      id: 'noite-do-fado-alfama',
+      id: 10,
       title: 'Noite do Fado',
       category: 'Concertos',
       dateLabel: 'Todas as sextas',
@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
       image: 'img/events/noite-de-fado-almada.jpeg'
     },
     {
-      id: 'web-summit-lisboa-2026',
+      id: 11,
       title: 'Web Summit Lisboa 2026',
       category: 'Outros',
       dateLabel: '9-11 de novembro',
@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
       image: 'img/events/web-summit-lisboa.jpeg'
     },
     {
-      id: 'sol-da-caparica-2026',
+      id: 12,
       title: 'Sol da Caparica 2026',
       category: 'Festivais',
       dateLabel: '13-16 de agosto',
@@ -168,30 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
       priceType: 'Pago',
       views: 1104,
       image: 'img/events/sol-caparica-costadacaparica.jpeg'
-    }
-  ];
-
-  const accounts = [
-    {
-      email: 'maria@example.com',
-      password: 'user123',
-      accountType: 'lambda',
-      roleLabel: 'Utilizador (lambda)',
-      name: 'Maria Silva'
-    },
-    {
-      email: 'joao@example.com',
-      password: 'org123',
-      accountType: 'organizador',
-      roleLabel: 'Organizador',
-      name: 'João Almeida'
-    },
-    {
-      email: 'admin@culturall.pt',
-      password: 'admin123',
-      accountType: 'admin',
-      roleLabel: 'Administrador',
-      name: 'Admin Cultur\'All'
     }
   ];
 
@@ -281,6 +257,156 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.removeItem(sessionKey);
   };
 
+  const syncLogoutRequest = () => {
+    void fetch('api/logout.php', {
+      method: 'POST',
+      credentials: 'same-origin'
+    }).catch(() => {
+      // Mantém o logout funcional mesmo sem backend disponível.
+    });
+  };
+
+  const requestJson = async (url, options = {}) => {
+    const response = await fetch(url, {
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options.headers ?? {})
+      },
+      ...options
+    });
+
+    const payload = await response.json().catch(() => null);
+    if (!payload || typeof payload !== 'object') {
+      throw new Error('Resposta inválida do servidor.');
+    }
+
+    if (!response.ok) {
+      const error = new Error(payload?.message ?? 'Pedido inválido.');
+      error.status = response.status;
+      error.payload = payload;
+      throw error;
+    }
+
+    return payload;
+  };
+
+  const serverEventsState = {
+    loaded: false,
+    items: []
+  };
+
+  const serverFavoritesState = {
+    loaded: false,
+    ids: [],
+    source: 'cache'
+  };
+
+  const favoriteIdAliases = {
+    'festival-fado-lisboa': '1',
+    'auto-barca-inferno': '2',
+    'arte-contemporanea-portuguesa': '3',
+    'dança-contemporanea': '4',
+    'danca-contemporanea': '4',
+    'primavera-sound': '5',
+    'rota-gastronomica-alentejo': '6',
+    'cinema-ar-livre-classicos': '7',
+    'noite-jazz-porto': '8',
+    'concerto-kpop-meo-arena': '9',
+    'noite-do-fado-alfama': '10',
+    'web-summit-lisboa-2026': '11',
+    'sol-da-caparica-2026': '12'
+  };
+
+  let rerenderListingPage = null;
+
+  const normalizeEventId = (value) => favoriteIdAliases[String(value)] ?? String(value);
+
+  const formatApiDateLabel = (value) => {
+    if (!value) {
+      return 'Data indisponível';
+    }
+
+    const parsedDate = new Date(value);
+    if (Number.isNaN(parsedDate.getTime())) {
+      return 'Data indisponível';
+    }
+
+    return new Intl.DateTimeFormat('pt-PT', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(parsedDate);
+  };
+
+  const normalizeServerEvent = (event) => {
+    const priceValue = Number(event.price ?? 0);
+    const isFree = Math.abs(priceValue) < 0.001;
+    const eventDate = event.startDate ?? event.eventDate ?? new Date().toISOString();
+    const location = event.location ?? [event.locationStreet, event.city].filter(Boolean).join(', ');
+
+    return {
+      ...event,
+      id: normalizeEventId(event.id),
+      title: String(event.title ?? ''),
+      category: String(event.category ?? 'Outros'),
+      description: String(event.description ?? ''),
+      dateLabel: event.dateLabel ?? formatApiDateLabel(eventDate),
+      dateBucket: event.dateBucket ?? getDateBucketForDateTime(new Date(eventDate).getTime(), Boolean(event.isRecurring)),
+      eventDate,
+      location: location || String(event.city ?? ''),
+      city: String(event.city ?? ''),
+      district: String(event.district ?? getDistrictKey(location) ?? 'Outros'),
+      priceLabel: event.priceLabel ?? (isFree ? 'Entrada Gratuita' : `€${priceValue.toFixed(0)}`),
+      priceType: event.priceType ?? (isFree ? 'Gratuito' : 'Pago'),
+      views: Number(event.views ?? 0),
+      image: event.image ?? 'img/events/default-event.jpg',
+      ticketUrl: event.ticketUrl ?? '',
+      status: event.status ?? 'published',
+      statusLabel: event.statusLabel ?? getEventStatusLabel(event.status ?? 'published'),
+      organizer: event.organizer ?? '',
+      organizerEmail: event.organizerEmail ?? '',
+      isRecurring: Boolean(event.isRecurring),
+      recurringPattern: event.recurringPattern ?? '',
+      recurringDays: event.recurringDays ?? '',
+      submittedAt: event.submittedAt ?? '',
+      approvedAt: event.approvedAt ?? '',
+      rejectReason: event.rejectReason ?? ''
+    };
+  };
+
+  const loadServerEvents = async (status = 'published') => {
+    try {
+      const response = await requestJson(`api/events.php?status=${encodeURIComponent(status)}`);
+      if (Array.isArray(response.events)) {
+        serverEventsState.items = response.events.map(normalizeServerEvent);
+      }
+    } catch {
+      serverEventsState.items = [];
+    } finally {
+      serverEventsState.loaded = true;
+      rerenderListingPage?.();
+    }
+  };
+
+  const loadServerFavorites = async () => {
+    try {
+      const response = await requestJson('api/favorites.php');
+      const favoriteIds = Array.isArray(response.favorites) ? response.favorites.map(normalizeEventId) : [];
+      serverFavoritesState.ids = favoriteIds;
+      serverFavoritesState.source = 'server';
+      setFavoriteIds(favoriteIds);
+    } catch {
+      serverFavoritesState.ids = [];
+      serverFavoritesState.source = 'cache';
+    } finally {
+      serverFavoritesState.loaded = true;
+      rerenderListingPage?.();
+    }
+  };
+
   const getEventStatusLabel = (status) => {
     if (status === 'hidden') {
       return 'Oculto';
@@ -288,6 +414,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (status === 'pending') {
       return 'Pendente';
+    }
+
+    if (status === 'published') {
+      return 'Publicado';
     }
 
     return 'Publicado';
@@ -316,7 +446,13 @@ document.addEventListener('DOMContentLoaded', () => {
     reader.readAsDataURL(file);
   })));
 
-  const getAllEvents = () => [...events, ...getCreatedEvents()];
+  const getAllEvents = () => {
+    const baseEvents = serverEventsState.loaded && serverEventsState.items.length > 0
+      ? serverEventsState.items
+      : events.map(normalizeServerEvent);
+
+    return [...baseEvents, ...getCreatedEvents().map(normalizeServerEvent)];
+  };
 
   const getVisibleEvents = () => getAllEvents().filter((event) => (event.status ?? 'published') === 'published');
 
@@ -330,26 +466,57 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const getFavoriteIds = () => {
+    const session = getSession();
+    if (session && serverFavoritesState.loaded && serverFavoritesState.source === 'server') {
+      return [...serverFavoritesState.ids];
+    }
+
     try {
-      return JSON.parse(localStorage.getItem(getFavoriteStorageKey())) ?? [];
+      return (JSON.parse(localStorage.getItem(getFavoriteStorageKey(session))) ?? []).map((favoriteId) => normalizeEventId(favoriteId));
     } catch {
       return [];
     }
   };
 
   const setFavoriteIds = (favoriteIds) => {
-    localStorage.setItem(getFavoriteStorageKey(), JSON.stringify(favoriteIds));
+    localStorage.setItem(getFavoriteStorageKey(), JSON.stringify(favoriteIds.map(normalizeEventId)));
   };
 
-  const isFavorite = (eventId) => getFavoriteIds().includes(eventId);
+  const isFavorite = (eventId) => getFavoriteIds().includes(normalizeEventId(eventId));
 
-  const toggleFavorite = (eventId) => {
+  const toggleFavorite = async (eventId) => {
+    const session = getSession();
+    const normalizedEventId = normalizeEventId(eventId);
     const favoriteIds = getFavoriteIds();
-    const updatedFavoriteIds = favoriteIds.includes(eventId)
-      ? favoriteIds.filter((favoriteId) => favoriteId !== eventId)
-      : [...favoriteIds, eventId];
+    const updatedFavoriteIds = favoriteIds.includes(normalizedEventId)
+      ? favoriteIds.filter((favoriteId) => favoriteId !== normalizedEventId)
+      : [...favoriteIds, normalizedEventId];
 
     setFavoriteIds(updatedFavoriteIds);
+
+    if (session) {
+      try {
+        const response = await requestJson('api/favorites.php', {
+          method: 'POST',
+          body: JSON.stringify({ eventId: Number(eventId) })
+        });
+
+        if (typeof response.favorite === 'boolean') {
+          const nextFavoriteIds = response.favorite
+            ? [...new Set([...favoriteIds, normalizedEventId])]
+            : favoriteIds.filter((favoriteId) => favoriteId !== normalizedEventId);
+
+          serverFavoritesState.ids = nextFavoriteIds;
+          serverFavoritesState.source = 'server';
+          setFavoriteIds(nextFavoriteIds);
+        }
+      } catch {
+        serverFavoritesState.ids = favoriteIds;
+        serverFavoritesState.source = 'cache';
+        setFavoriteIds(favoriteIds);
+      }
+    }
+
     return updatedFavoriteIds;
   };
 
@@ -511,6 +678,52 @@ document.addEventListener('DOMContentLoaded', () => {
     return `${dayLabel} às ${timeValue}`;
   };
 
+  const getFavoriteAriaLabel = (eventId) => (isFavorite(eventId) ? 'Remover dos Favoritos' : 'Adicionar aos Favoritos');
+
+  const getFavoriteDetailLabel = (eventId) => (isFavorite(eventId) ? 'Remover dos Favoritos' : 'Adicionar aos Favoritos');
+
+  const syncLoginHeaderState = (rootDocument = document) => {
+    const session = getSession();
+    const loginToggleBtn = rootDocument.getElementById('loginToggleBtn');
+    const accountChip = rootDocument.getElementById('accountChip');
+
+    if (!loginToggleBtn || !accountChip) {
+      return;
+    }
+
+    loginToggleBtn.hidden = false;
+    loginToggleBtn.replaceChildren();
+    loginToggleBtn.insertAdjacentHTML('afterbegin', session ? iconLogout : iconLogin);
+    loginToggleBtn.append(document.createTextNode(session ? 'Sair' : 'Entrar'));
+
+    if (session) {
+      accountChip.hidden = false;
+      accountChip.style.display = 'inline-flex';
+      accountChip.textContent = `${session.name}`;
+      if (session.accountType === 'admin') {
+        const favoritesBtn = rootDocument.querySelector('.favorites-btn');
+        if (favoritesBtn) {
+          favoritesBtn.style.display = 'none';
+        }
+      }
+      loginToggleBtn.href = '#';
+      loginToggleBtn.setAttribute('aria-label', 'Terminar sessão');
+      loginToggleBtn.dataset.logged = 'true';
+      return;
+    }
+
+    accountChip.hidden = true;
+    accountChip.style.display = 'none';
+    accountChip.textContent = '';
+    const favoritesBtn = rootDocument.querySelector('.favorites-btn');
+    if (favoritesBtn) {
+      favoritesBtn.style.display = '';
+    }
+    loginToggleBtn.href = 'login.html';
+    loginToggleBtn.setAttribute('aria-label', 'Entrar');
+    loginToggleBtn.dataset.logged = 'false';
+  };
+
   const getListingEvents = () => {
     if (pageType === 'favorites') {
       return getFavoriteIds()
@@ -521,7 +734,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return getVisibleEvents();
   };
 
-  const getEventById = (eventId) => getAllEvents().find((event) => event.id === eventId) ?? null;
+  const getEventById = (eventId) => getAllEvents().find((event) => normalizeEventId(event.id) === normalizeEventId(eventId)) ?? null;
 
   const getEventDetailUrl = (eventId) => `event.html?id=${encodeURIComponent(eventId)}`;
 
@@ -541,7 +754,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <article class="event-card${isPastEvent(event) ? ' is-past' : ''}" tabindex="0" role="link" aria-label="Abrir evento ${event.title}" data-event-id="${event.id}" data-event-link="${getEventDetailUrl(event.id)}" data-category="${event.category}" data-date="${event.dateBucket}" data-location="${getEventDistrict(event)}" data-price="${event.priceType}" data-title="${event.title.toLowerCase()}">
       <div class="event-media">
         <span class="event-pill">${event.category}</span>
-        <button class="favorite-btn${isFavorite(event.id) ? ' active' : ''}" type="button" aria-label="${isFavorite(event.id) ? 'Remover dos favoritos' : 'Guardar evento'}" aria-pressed="${isFavorite(event.id) ? 'true' : 'false'}" data-event-id="${event.id}">
+        <button class="favorite-btn${isFavorite(event.id) ? ' active' : ''}" type="button" aria-label="${getFavoriteAriaLabel(event.id)}" aria-pressed="${isFavorite(event.id) ? 'true' : 'false'}" data-event-id="${event.id}">
           <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.6-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.4-7 10-7 10Z"></path></svg>
         </button>
         <img src="${event.image}" alt="${event.title}" loading="lazy" />
@@ -567,7 +780,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <button class="share-btn" type="button" aria-label="Partilhar evento" data-event-id="${event.id}">
           <svg viewBox="0 0 24 24"><path d="M16 8a3 3 0 1 0-2.83-4H13a3 3 0 0 0 3 4Zm-8 4a3 3 0 1 0-2.83-4H5a3 3 0 0 0 3 4Zm8 8a3 3 0 1 0-2.83-4H13a3 3 0 0 0 3 4Z"></path><path d="m7.5 9.5 8 4m-8 1 8-4"></path></svg>
         </button>
-        <button class="favorite-btn${isFavorite(event.id) ? ' active' : ''}" type="button" aria-label="${isFavorite(event.id) ? 'Remover dos favoritos' : 'Guardar evento'}" aria-pressed="${isFavorite(event.id) ? 'true' : 'false'}" data-event-id="${event.id}">
+        <button class="favorite-btn${isFavorite(event.id) ? ' active' : ''}" type="button" aria-label="${getFavoriteAriaLabel(event.id)}" aria-pressed="${isFavorite(event.id) ? 'true' : 'false'}" data-event-id="${event.id}">
           <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.6-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.4-7 10-7 10Z"></path></svg>
         </button>
         <img src="${event.image}" alt="${event.title}" loading="lazy" />
@@ -677,7 +890,7 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
 
               <a class="event-detail-action primary" href="${event.ticketUrl ?? '#'}" ${event.ticketUrl ? 'target="_blank" rel="noopener noreferrer"' : ''}>Ver Bilhetes</a>
-              <button class="event-detail-action secondary" type="button">Guardar Evento</button>
+              <button class="event-detail-action secondary" id="eventDetailFavoriteBtn" type="button" data-event-id="${event.id}">${getFavoriteDetailLabel(event.id)}</button>
             </aside>
           </section>
 
@@ -708,10 +921,32 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     `;
 
-    bindCardNavigation(document.getElementById('relatedEventsGrid'));
+    const eventDetailFavoriteBtn = document.getElementById('eventDetailFavoriteBtn');
+    if (eventDetailFavoriteBtn) {
+      const updateDetailFavoriteLabel = () => {
+        const isEventFavorite = isFavorite(event.id);
+        eventDetailFavoriteBtn.textContent = isEventFavorite ? 'Remover dos Favoritos' : 'Adicionar aos Favoritos';
+        eventDetailFavoriteBtn.setAttribute('aria-pressed', String(isEventFavorite));
+      };
+
+      updateDetailFavoriteLabel();
+
+      eventDetailFavoriteBtn.addEventListener('click', async () => {
+        if (!getSession()) {
+          window.location.href = 'login.html';
+          return;
+        }
+
+        await toggleFavorite(event.id);
+        updateDetailFavoriteLabel();
+      });
+    }
+
+    syncLoginHeaderState(detailRoot.ownerDocument);
+    bindEventCardActions(document.getElementById('relatedEventsGrid'));
   };
 
-  const bindCardNavigation = (container) => {
+  const bindEventCardActions = (container, options = {}) => {
     if (!container) {
       return;
     }
@@ -719,6 +954,43 @@ document.addEventListener('DOMContentLoaded', () => {
     container.addEventListener('click', (event) => {
       const target = event.target;
       if (!(target instanceof Element)) {
+        return;
+      }
+
+      const favoriteButton = target.closest('.favorite-btn');
+      if (favoriteButton) {
+        const eventId = favoriteButton.dataset.eventId;
+        if (!eventId) {
+          return;
+        }
+
+        if (!getSession()) {
+          window.location.href = 'login.html';
+          return;
+        }
+
+        void (async () => {
+          await toggleFavorite(eventId);
+          const isEventFavorite = isFavorite(eventId);
+          favoriteButton.classList.toggle('active', isEventFavorite);
+          favoriteButton.setAttribute('aria-label', getFavoriteAriaLabel(eventId));
+          favoriteButton.setAttribute('aria-pressed', String(isEventFavorite));
+          if (typeof options.onFavoriteToggled === 'function') {
+            options.onFavoriteToggled(eventId);
+          }
+          if (typeof options.onRender === 'function') {
+            options.onRender();
+          }
+        })();
+        return;
+      }
+
+      const shareButton = target.closest('.share-btn');
+      if (shareButton) {
+        const eventId = shareButton.dataset.eventId;
+        if (eventId) {
+          void shareEvent(eventId);
+        }
         return;
       }
 
@@ -772,7 +1044,11 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    bindCardNavigation(cardsGrid);
+    if (pageType === 'favorites' && session && !serverFavoritesState.loaded) {
+      void loadServerFavorites();
+    }
+
+    bindEventCardActions(cardsGrid);
 
     const emptyState = document.getElementById('emptyState');
     const resultsCount = document.getElementById('resultsCount');
@@ -781,6 +1057,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewChip = document.getElementById('viewChip');
     const searchInput = document.getElementById('searchInput');
     const categoryFilter = document.getElementById('categoryFilter');
+    const dateFilter = document.getElementById('dateFilter');
     const dateCustomControls = document.getElementById('dateCustomControls');
     const datePickerInput = document.getElementById('datePickerInput');
     const openDatePickerBtn = document.getElementById('openDatePickerBtn');
@@ -1058,6 +1335,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
 
+    rerenderListingPage = renderCards;
+
     [searchInput, categoryFilter, dateFilter, locationFilter, priceFilter].forEach((element) => {
       if (!element) {
         return;
@@ -1226,8 +1505,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      toggleFavorite(eventId);
-      renderCards();
+      void (async () => {
+        await toggleFavorite(eventId);
+        renderCards();
+      })();
     });
 
     if (loginToggleBtn) {
@@ -1238,6 +1519,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         event.preventDefault();
+        syncLogoutRequest();
         clearSession();
         renderLoginState();
       });
@@ -1253,11 +1535,23 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    const loginPanel = document.getElementById('loginPanel');
     const authMessage = document.getElementById('authMessage');
+    const registerPanel = document.getElementById('registerPanel');
+    const registerForm = document.getElementById('registerForm');
+    const registerMessage = document.getElementById('registerMessage');
     const backHomeBtn = document.getElementById('backHomeBtn');
-    const createAccountBtn = document.getElementById('createAccountBtn');
+    const showLoginBtn = document.getElementById('showLoginBtn');
+    const showRegisterBtn = document.getElementById('showRegisterBtn');
+    const loginTitle = document.getElementById('loginTitle');
+    const authSubtitle = document.getElementById('authSubtitle');
     const emailInput = document.getElementById('emailInput');
     const passwordInput = document.getElementById('passwordInput');
+    const registerNameInput = document.getElementById('registerNameInput');
+    const registerEmailInput = document.getElementById('registerEmailInput');
+    const registerPasswordInput = document.getElementById('registerPasswordInput');
+    const registerConfirmPasswordInput = document.getElementById('registerConfirmPasswordInput');
+    const registerAccountTypeInputs = Array.from(document.querySelectorAll('input[name="registerAccountType"]'));
 
     const updateAuthMessage = (message) => {
       if (authMessage) {
@@ -1265,36 +1559,110 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
 
-    loginForm.addEventListener('submit', (event) => {
+    const updateRegisterMessage = (message) => {
+      if (registerMessage) {
+        registerMessage.textContent = message;
+      }
+    };
+
+    const setAuthMode = (mode) => {
+      const isRegisterMode = mode === 'register';
+
+      if (loginPanel) {
+        loginPanel.hidden = isRegisterMode;
+      }
+
+      if (registerPanel) {
+        registerPanel.hidden = !isRegisterMode;
+      }
+
+      if (showLoginBtn) {
+        showLoginBtn.classList.toggle('active', !isRegisterMode);
+        showLoginBtn.setAttribute('aria-selected', String(!isRegisterMode));
+      }
+
+      if (showRegisterBtn) {
+        showRegisterBtn.classList.toggle('active', isRegisterMode);
+        showRegisterBtn.setAttribute('aria-selected', String(isRegisterMode));
+      }
+
+      if (loginTitle) {
+        loginTitle.textContent = isRegisterMode ? 'Criar conta' : 'Bem-vindo';
+      }
+
+      if (authSubtitle) {
+        authSubtitle.textContent = isRegisterMode
+          ? 'Preenche os teus dados para começar'
+          : 'Inicie sessão na sua conta';
+      }
+
+      updateAuthMessage('');
+      updateRegisterMessage('');
+
+      if (!isRegisterMode) {
+        emailInput?.focus();
+        return;
+      }
+
+      registerNameInput?.focus();
+    };
+
+    const setRegisterPanelVisible = (isVisible) => {
+      if (!registerPanel) {
+        return;
+      }
+
+      setAuthMode(isVisible ? 'register' : 'login');
+    };
+
+    const getSelectedRegisterAccountType = () => registerAccountTypeInputs.find((input) => input.checked)?.value ?? 'lambda';
+
+    loginForm.addEventListener('submit', async (event) => {
       event.preventDefault();
 
       const email = emailInput.value.trim().toLowerCase();
       const password = passwordInput.value;
-      const matchedAccount = accounts.find((account) => account.email === email && account.password === password);
 
-      if (!matchedAccount) {
-        updateAuthMessage('Credenciais inválidas. Confere o email e a palavra-passe.');
-        return;
-      }
+      try {
+        const response = await requestJson('api/login.php', {
+          method: 'POST',
+          body: JSON.stringify({ email, password })
+        });
 
-      const currentSession = getSession();
+        if (!response?.user) {
+          throw new Error('O servidor não devolveu a sessão do utilizador.');
+        }
 
-      setSession({
-        email: matchedAccount.email,
-        name: matchedAccount.name,
-        roleLabel: matchedAccount.roleLabel,
-        accountType: matchedAccount.accountType,
-        location: currentSession?.location ?? ''
-      });
+        const currentSession = getSession();
+        setSession({
+          ...response.user,
+          location: currentSession?.location ?? ''
+        });
 
-      updateAuthMessage(`Sessão iniciada como ${matchedAccount.roleLabel}.`);
+        try {
+          const favoritesResponse = await requestJson('api/favorites.php');
+            const favoriteIds = Array.isArray(favoritesResponse.favorites) ? favoritesResponse.favorites.map(normalizeEventId) : [];
+            serverFavoritesState.ids = favoriteIds;
+            serverFavoritesState.loaded = true;
+            setFavoriteIds(favoriteIds);
+        } catch {
+          // Mantém os favoritos locais caso a API não responda de imediato.
+        }
 
-      if (matchedAccount.accountType === 'lambda') {
+        updateAuthMessage(`Sessão iniciada como ${response.user.roleLabel}.`);
         window.location.href = 'profile.html';
         return;
-      }
+      } catch (error) {
+        const remoteStatus = error instanceof Error ? error.status : undefined;
+        const remoteMessage = error instanceof Error ? error.message : '';
 
-      window.location.href = 'profile.html';
+        if (remoteStatus === 401 || remoteStatus === 403) {
+          updateAuthMessage(remoteMessage || 'Não foi possível iniciar sessão.');
+          return;
+        }
+
+        updateAuthMessage(remoteMessage || 'Não foi possível ligar ao servidor de autenticação.');
+      }
     });
 
     if (backHomeBtn) {
@@ -1304,11 +1672,72 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    if (createAccountBtn) {
-      createAccountBtn.addEventListener('click', () => {
-        updateAuthMessage('A criação de conta ainda não está disponível nesta versão.');
+    if (showLoginBtn) {
+      showLoginBtn.addEventListener('click', () => setAuthMode('login'));
+    }
+
+    if (showRegisterBtn) {
+      showRegisterBtn.addEventListener('click', () => setAuthMode('register'));
+    }
+
+    if (registerForm) {
+      registerForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const name = registerNameInput?.value.trim() ?? '';
+        const email = registerEmailInput?.value.trim().toLowerCase() ?? '';
+        const password = registerPasswordInput?.value ?? '';
+        const confirmPassword = registerConfirmPasswordInput?.value ?? '';
+        const accountType = getSelectedRegisterAccountType();
+
+        try {
+          const response = await requestJson('api/register.php', {
+            method: 'POST',
+            body: JSON.stringify({ name, email, password, confirmPassword, accountType })
+          });
+
+          if (response?.pending) {
+            const pendingMessage = response.message ?? 'Conta criada e pendente de aprovação.';
+            setAuthMode('login');
+            updateAuthMessage(pendingMessage);
+            updateRegisterMessage('');
+            registerForm.reset();
+            registerAccountTypeInputs.forEach((input) => {
+              input.checked = input.value === 'lambda';
+            });
+            return;
+          }
+
+          if (!response?.user) {
+            throw new Error('O servidor não devolveu a nova conta.');
+          }
+
+          const currentSession = getSession();
+          setSession({
+            ...response.user,
+            location: currentSession?.location ?? ''
+          });
+
+          try {
+            const favoritesResponse = await requestJson('api/favorites.php');
+            const favoriteIds = Array.isArray(favoritesResponse.favorites) ? favoritesResponse.favorites.map(normalizeEventId) : [];
+            serverFavoritesState.ids = favoriteIds;
+            serverFavoritesState.loaded = true;
+            setFavoriteIds(favoriteIds);
+          } catch {
+            // Mantém a navegação funcional mesmo se a API de favoritos falhar.
+          }
+
+          updateRegisterMessage(response.message ?? 'Conta criada com sucesso.');
+          updateAuthMessage('');
+          window.location.href = 'profile.html';
+        } catch (error) {
+          updateRegisterMessage(error instanceof Error ? error.message : 'Não foi possível criar a conta.');
+        }
       });
     }
+
+    setAuthMode('login');
   };
 
   const renderProfilePage = () => {
@@ -1335,6 +1764,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (profileLogoutBtn) {
       profileLogoutBtn.addEventListener('click', () => {
+        syncLogoutRequest();
         clearSession();
         if (profileAccountChip) {
           profileAccountChip.hidden = true;
@@ -1358,7 +1788,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const historyItems = [
         {
           title: 'Festival Primavera Sound',
-          meta: 'Evento guardado · 28 de março às 16:00',
+          meta: 'Nos favoritos · 28 de março às 16:00',
           status: 'Confirmado'
         },
         {
@@ -1377,7 +1807,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="page">
           <div class="profile-hero">
             <h1>A Minha Área</h1>
-            <p>Gerir os seus eventos guardados e histórico</p>
+            <p>Gerir os seus favoritos e histórico</p>
           </div>
 
           <div class="profile-tabs" role="tablist" aria-label="Separadores da área pessoal">
@@ -1388,7 +1818,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="profile-panels">
             <section class="profile-panel active" data-profile-pane="wallet" id="carteira">
               <h2 class="profile-section-title">Eventos Futuros</h2>
-              <p class="profile-section-subtitle"><span id="savedEventsCount">1</span> evento guardado</p>
+              <p class="profile-section-subtitle"><span id="savedEventsCount">1</span> evento nos favoritos</p>
 
               <div class="profile-grid">
                 <div class="saved-event-wrap" id="savedEventCard"></div>
@@ -1418,7 +1848,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="profile-stat">
                       <strong>1</strong>
-                      <span>favorito guardado</span>
+                      <span>favorito nos favoritos</span>
                     </div>
                     <div class="profile-stat">
                       <strong>2</strong>
@@ -1468,7 +1898,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <article class="event-card">
             <div class="event-media">
               <span class="event-pill">${selectedEvent.category}</span>
-              <button class="favorite-btn" type="button" aria-label="Guardar evento">
+              <button class="favorite-btn${isFavorite(selectedEvent.id) ? ' active' : ''}" type="button" aria-label="${getFavoriteAriaLabel(selectedEvent.id)}" aria-pressed="${isFavorite(selectedEvent.id) ? 'true' : 'false'}" data-event-id="${selectedEvent.id}">
                 <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.6-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.4-7 10-7 10Z"></path></svg>
               </button>
               <img src="${selectedEvent.image}" alt="${selectedEvent.title}" loading="lazy" />
@@ -1481,11 +1911,27 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
               <div class="price-row">
                 <span class="price ${selectedEvent.priceType === 'Gratuito' ? 'free' : ''}">${selectedEvent.priceLabel}</span>
-                <span class="tagline">Guardado</span>
+                <span class="tagline">Nos favoritos</span>
               </div>
             </div>
           </article>
         `;
+
+        const savedEventFavoriteBtn = savedEventCard.querySelector('.favorite-btn');
+        if (savedEventFavoriteBtn) {
+          savedEventFavoriteBtn.addEventListener('click', async () => {
+            if (!getSession()) {
+              window.location.href = 'login.html';
+              return;
+            }
+
+            await toggleFavorite(selectedEvent.id);
+            const isEventFavorite = isFavorite(selectedEvent.id);
+            savedEventFavoriteBtn.classList.toggle('active', isEventFavorite);
+            savedEventFavoriteBtn.setAttribute('aria-label', getFavoriteAriaLabel(selectedEvent.id));
+            savedEventFavoriteBtn.setAttribute('aria-pressed', String(isEventFavorite));
+          });
+        }
       }
 
       if (historyList) {
@@ -1541,43 +1987,136 @@ document.addEventListener('DOMContentLoaded', () => {
         .slice(0, 5);
 
       const adminDashboard = {
-        stats: [
-          { value: '4', label: 'Total de Utilizadores', icon: 'users' },
-          { value: '8', label: 'Eventos Ativos', icon: 'calendar' },
-          { value: '4', label: 'Eventos Pendentes', icon: 'pending' },
-          { value: '3', label: 'Organizadores', icon: 'trend' }
-        ],
-        users: [
-          { name: 'Maria Silva', email: 'maria@example.com', registered: '15/01/2025', events: 12, status: 'Ativo' },
-          { name: 'Ana Costa', email: 'ana@example.com', registered: '20/02/2025', events: 5, status: 'Ativo' },
-          { name: 'Pedro Oliveira', email: 'pedro@example.com', registered: '10/01/2025', events: 3, status: 'Inativo' },
-          { name: 'Sofia Ferreira', email: 'sofia@example.com', registered: '01/03/2026', events: 8, status: 'Ativo' }
-        ],
-        pendingEvents: [
-          { title: 'Workshop de Fotografia de Rua', category: 'Arte e Exposições', date: '10/06/2026', organizer: 'Carlos Mendes', submitted: '08/05/2026' },
-          { title: 'Concerto de Guitarra Clássica', category: 'Música', date: '15/06/2026', organizer: 'João Santos', submitted: '09/05/2026' },
-          { title: 'Festival de Street Food', category: 'Gastronomia', date: '20/06/2026', organizer: 'Carlos Mendes', submitted: '10/05/2026' },
-          { title: 'Exposição de Pintura Moderna', category: 'Arte e Exposições', date: '25/06/2026', organizer: 'Rita Alves', submitted: '07/05/2026' }
-        ],
-        publishedEvents: [
-          { title: 'Festival de Fado de Lisboa', category: 'Música', date: '20/03/2026', organizer: 'CCB - Centro Cultural de Belém' },
-          { title: 'Peça: O Auto da Barca do Inferno', category: 'Teatro', date: '18/03/2026', organizer: 'Teatro Nacional D. Maria II' },
-          { title: 'Exposição: Arte Contemporânea Portuguesa', category: 'Arte e Exposições', date: '15/03/2026', organizer: 'Museu Coleção Berardo' },
-          { title: 'Espetáculo de Dança Contemporânea', category: 'Dança', date: '22/03/2026', organizer: 'Companhia Nacional de Bailado' },
-          { title: 'Festival Primavera Sound', category: 'Festivais', date: '28/03/2026', organizer: 'Primavera Sound' },
-          { title: 'Rota Gastronómica do Alentejo', category: 'Gastronomia', date: '16/03/2026', organizer: 'Turismo do Alentejo' },
-          { title: 'Cinema ao Ar Livre: Clássicos Portugueses', category: 'Cinema', date: '19/03/2026', organizer: 'Câmara Municipal de Lisboa' },
-          { title: 'Noite de Jazz no Porto', category: 'Música', date: '25/03/2026', organizer: 'Hot Clube de Portugal' }
-        ],
-        organizers: [
-          { name: 'João Santos', email: 'joao@example.com', registered: '05/11/2024', created: 15, status: 'Aprovado', action: 'Suspender' },
-          { name: 'Carlos Mendes', email: 'carlos@example.com', registered: '20/01/2025', created: 8, status: 'Aprovado', action: 'Suspender' },
-          { name: 'Rita Alves', email: 'rita@example.com', registered: '10/12/2024', created: 3, status: 'Suspenso', action: 'Aprovar' }
-        ]
+        stats: [],
+        users: [],
+        pendingEvents: [],
+        publishedEvents: [],
+        organizers: []
       };
 
-      const adminUsers = adminDashboard.users.map((user) => ({ ...user }));
-      const adminOrganizers = adminDashboard.organizers.map((organizer) => ({ ...organizer }));
+      let adminUsers = adminDashboard.users.map((user) => ({
+        ...user,
+        isActive: String(user.status ?? '').toLowerCase() === 'ativo'
+      }));
+
+      const normalizeOrganizerStatus = (status) => {
+        const normalizedStatus = String(status ?? '').toLowerCase();
+        if (normalizedStatus === 'aprovado' || normalizedStatus === 'approved') {
+          return 'aprovado';
+        }
+
+        if (normalizedStatus === 'pendente' || normalizedStatus === 'pending') {
+          return 'pendente';
+        }
+
+        return 'suspenso';
+      };
+
+      const getOrganizerStatusLabel = (status) => {
+        const normalizedStatus = normalizeOrganizerStatus(status);
+        if (normalizedStatus === 'aprovado') {
+          return 'Aprovado';
+        }
+
+        if (normalizedStatus === 'pendente') {
+          return 'Pendente';
+        }
+
+        return 'Suspenso';
+      };
+
+      const formatAdminDate = (dateValue) => {
+        if (!dateValue) {
+          return '—';
+        }
+
+        const parsedDate = new Date(dateValue);
+        if (Number.isNaN(parsedDate.getTime())) {
+          return '—';
+        }
+
+        return new Intl.DateTimeFormat('pt-PT', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        }).format(parsedDate);
+      };
+
+      const normalizeUserActiveState = (value) => {
+        if (typeof value === 'boolean') {
+          return value;
+        }
+
+        if (typeof value === 'number') {
+          return value === 1;
+        }
+
+        const normalizedValue = String(value ?? '').trim().toLowerCase();
+        return ['1', 'true', 'ativo', 'active'].includes(normalizedValue);
+      };
+
+      const getUserStatusLabel = (isActive) => (isActive ? 'Ativo' : 'Inativo');
+
+      const isAdminUserActive = (user) => normalizeUserActiveState(
+        user?.isActive ?? user?.estado ?? user?.status
+      );
+
+      const mapAdminUser = (user) => {
+        const isActive = isAdminUserActive(user);
+        return {
+          name: user.name,
+          email: user.email,
+          registered: user.registered ?? formatAdminDate(user.registeredAt),
+          events: user.events ?? user.favoriteCount ?? 0,
+          isActive,
+          status: getUserStatusLabel(isActive)
+        };
+      };
+
+      const mapAdminOrganizer = (organizer) => {
+        const statusCode = normalizeOrganizerStatus(organizer.status);
+        return {
+          name: organizer.name,
+          email: organizer.email,
+          registered: organizer.registered ?? formatAdminDate(organizer.registeredAt),
+          created: organizer.created ?? organizer.eventCount ?? 0,
+          statusCode,
+          status: getOrganizerStatusLabel(statusCode),
+          action: statusCode === 'aprovado' ? 'Suspender' : 'Aprovar'
+        };
+      };
+
+      let adminOrganizers = adminDashboard.organizers.map(mapAdminOrganizer);
+
+      const loadAdminUsers = async () => {
+        try {
+          const response = await requestJson('api/admin/users.php');
+          if (Array.isArray(response.users)) {
+            adminUsers = response.users.map(mapAdminUser);
+            renderAdminUsersTable();
+          }
+        } catch {
+          // Mantém os dados de fallback se a API não responder.
+        }
+      };
+
+      const loadAdminOrganizers = async () => {
+        try {
+          const response = await requestJson('api/admin/organizers.php');
+          if (Array.isArray(response.organizers)) {
+            adminOrganizers = response.organizers.map((organizer) => mapAdminOrganizer({
+              name: organizer.name,
+              email: organizer.email,
+              registeredAt: organizer.registeredAt,
+              eventCount: organizer.eventCount,
+              status: organizer.status
+            }));
+            renderAdminOrganizersTable();
+          }
+        } catch {
+          // Mantém os dados de fallback se a API não responder.
+        }
+      };
 
       const adminKpiIcons = {
         users: '<svg viewBox="0 0 24 24"><path d="M4 20c1.8-4 4.9-6 8-6s6.2 2 8 6"></path><circle cx="12" cy="8" r="4"></circle><circle cx="6.5" cy="10" r="2.5"></circle><circle cx="17.5" cy="10" r="2.5"></circle></svg>',
@@ -1865,7 +2404,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         tableBody.innerHTML = adminUsers.map((user) => {
-          const userAction = user.status === 'Ativo'
+          const isActive = isAdminUserActive(user);
+          const userAction = isActive
             ? {
                 action: 'deactivate',
                 ariaLabel: 'Inativar utilizador',
@@ -1883,7 +2423,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <td>${user.email}</td>
             <td>${user.registered}</td>
             <td>${user.events}</td>
-            <td><span class="admin-pill ${user.status === 'Ativo' ? 'success' : 'danger'}">${user.status}</span></td>
+            <td><span class="admin-pill ${isActive ? 'success' : 'danger'}">${getUserStatusLabel(isActive)}</span></td>
             <td>
               <div class="admin-actions-group">
                 <button type="button" class="admin-icon-btn" aria-label="Ver utilizador" data-admin-user-view="${user.email}">
@@ -1983,7 +2523,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         adminOrganizersTableBody.innerHTML = adminOrganizers.map((organizer) => {
-          const isActive = organizer.status === 'Aprovado';
+          const isActive = organizer.statusCode === 'aprovado';
           const organizerAction = isActive
             ? {
                 action: 'suspend',
@@ -2002,7 +2542,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <td>${organizer.email}</td>
               <td>${organizer.registered}</td>
               <td>${organizer.created}</td>
-              <td><span class="admin-pill ${isActive ? 'success' : 'danger'}">${organizer.status}</span></td>
+              <td><span class="admin-pill ${isActive ? 'success' : organizer.statusCode === 'pendente' ? 'warning' : 'danger'}">${organizer.status}</span></td>
               <td>
                 <div class="admin-actions-group">
                   <button type="button" class="admin-icon-btn" aria-label="Ver organizador" data-admin-organizer-view="${organizer.email}">
@@ -2072,7 +2612,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         selectedAdminOrganizerEmail = organizerEmail;
-        if (organizer.status === 'Aprovado') {
+        if (organizer.statusCode === 'aprovado') {
           selectedAdminOrganizerAction = 'suspend';
           adminOrganizerActionModalTitle.textContent = 'Suspender organizador?';
           adminOrganizerActionModalText.textContent = `Pretendes suspender o organizador ${organizer.name}?`;
@@ -2094,10 +2634,27 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
 
-        organizer.status = selectedAdminOrganizerAction === 'activate' ? 'Aprovado' : 'Suspenso';
-        organizer.action = organizer.status === 'Aprovado' ? 'Suspender' : 'Aprovar';
-        renderAdminOrganizersTable();
-        closeAdminModal(adminOrganizerActionModal);
+        const nextStatusCode = selectedAdminOrganizerAction === 'activate' ? 'aprovado' : 'suspenso';
+
+        void (async () => {
+          try {
+            await requestJson('api/admin/organizers.php', {
+              method: 'PATCH',
+              body: JSON.stringify({
+                email: selectedAdminOrganizerEmail,
+                status: nextStatusCode
+              })
+            });
+          } catch {
+            // Mantém a interface funcional mesmo se a API não responder.
+          }
+
+          organizer.statusCode = nextStatusCode;
+          organizer.status = getOrganizerStatusLabel(nextStatusCode);
+          organizer.action = organizer.statusCode === 'aprovado' ? 'Suspender' : 'Aprovar';
+          renderAdminOrganizersTable();
+          closeAdminModal(adminOrganizerActionModal);
+        })();
       };
 
       const applyAdminEventAction = () => {
@@ -2139,7 +2696,7 @@ document.addEventListener('DOMContentLoaded', () => {
         adminUserEmail.textContent = user.email;
         adminUserRegistered.textContent = user.registered;
         adminUserEvents.textContent = String(user.events);
-        adminUserStatus.textContent = user.status;
+        adminUserStatus.textContent = getUserStatusLabel(isAdminUserActive(user));
         openAdminModal(adminUserProfileModal);
       };
 
@@ -2150,7 +2707,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         selectedAdminUserEmail = userEmail;
-        if (user.status === 'Ativo') {
+        if (isAdminUserActive(user)) {
           selectedAdminUserAction = 'deactivate';
           adminDeactivateModalTitle.textContent = 'Inativar conta?';
           adminDeactivateModalText.textContent = `Pretendes colocar a conta de ${user.name} como inativa?`;
@@ -2185,9 +2742,26 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
 
-        user.status = selectedAdminUserAction === 'activate' ? 'Ativo' : 'Inativo';
-        renderAdminUsersTable();
-        closeAdminModal(adminDeactivateModal);
+        const nextIsActive = selectedAdminUserAction === 'activate';
+
+        void (async () => {
+          try {
+            await requestJson('api/admin/users.php', {
+              method: 'PATCH',
+              body: JSON.stringify({
+                email: selectedAdminUserEmail,
+                estado: nextIsActive
+              })
+            });
+          } catch {
+            // Mantém o fluxo funcional no frontend mesmo se a API não responder.
+          }
+
+          user.isActive = nextIsActive;
+          user.status = getUserStatusLabel(nextIsActive);
+          renderAdminUsersTable();
+          closeAdminModal(adminDeactivateModal);
+        })();
       });
 
       adminEventActionConfirmBtn?.addEventListener('click', applyAdminEventAction);
@@ -2195,6 +2769,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       renderAdminModerationLists();
       renderAdminOrganizersTable();
+      void loadAdminOrganizers();
+      void loadAdminUsers();
 
       profileRoot.addEventListener('click', (event) => {
         const target = event.target;
@@ -2668,8 +3244,38 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
           }
 
+          const organizerLocationDistrict = getDistrictKey(location) ?? getSession()?.location ?? 'Lisboa';
+          const organizerLocationCity = getDistrictKey(location) ?? organizerLocationDistrict;
+
+          let createdEventServerId = null;
+          try {
+            const response = await requestJson('api/events.php', {
+              method: 'POST',
+              body: JSON.stringify({
+                title,
+                description: 'Evento criado através do painel do organizador.',
+                startDate: eventDate.toISOString(),
+                endDate: '',
+                price: priceType === 'Pago' ? Number(organizerEventPriceValue?.value || 0) : 0,
+                ticketUrl,
+                category,
+                locationStreet: location,
+                locationCity: organizerLocationCity,
+                locationDistrict: organizerLocationDistrict,
+                images: imageUrls,
+                isRecurring,
+                recurringPattern: isRecurring ? 'semanal' : '',
+                recurringDays: isRecurring ? recurringDays.join(',') : ''
+              })
+            });
+
+            createdEventServerId = response.eventId ?? null;
+          } catch {
+            createdEventServerId = null;
+          }
+
           const newEvent = {
-            id: `event-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            id: createdEventServerId ? String(createdEventServerId) : `event-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
             title,
             category,
             dateLabel,
@@ -2744,4 +3350,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderListingPage();
   renderLoginPage();
   renderProfilePage();
+
+  void loadServerEvents();
 });

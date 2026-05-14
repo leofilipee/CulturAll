@@ -16,41 +16,73 @@
     <a class="auth-brand" href="index.html" aria-label="Cultur'All início">Cultur'All</a>
 
     <section class="auth-card" aria-labelledby="loginTitle">
-      <h1 id="loginTitle">Bem-vindo</h1>
-      <p class="auth-subtitle">Inicie sessão na sua conta</p>
-
-      <form id="loginForm" class="auth-form" novalidate>
-        <label for="emailInput">Email</label>
-        <input id="emailInput" name="email" type="email" placeholder="seu@email.com" autocomplete="username" required />
-
-        <label for="passwordInput">Palavra-passe</label>
-        <input id="passwordInput" name="password" type="password" placeholder="••••••••" autocomplete="current-password" required />
-
-        <button class="login-submit" type="submit">
-          <svg viewBox="0 0 24 24"><path d="M10 17l5-5-5-5"></path><path d="M15 12H4"></path></svg>
-          Entrar
-        </button>
-
-        <button class="create-account-btn" id="createAccountBtn" type="button">Criar Conta</button>
-      </form>
-
-      <p class="auth-message" id="authMessage" role="status" aria-live="polite"></p>
-
-      <div class="test-accounts">
-        <p class="test-accounts-title">Contas de teste:</p>
-        <div class="test-account-card">
-          <strong>Utilizador (lambda):</strong> maria@example.com
-          <span>Palavra-passe: user123</span>
-        </div>
-        <div class="test-account-card">
-          <strong>Organizador:</strong> joao@example.com
-          <span>Palavra-passe: org123</span>
-        </div>
-        <div class="test-account-card">
-          <strong>Administrador:</strong> admin@culturall.pt
-          <span>Palavra-passe: admin123</span>
-        </div>
+      <div class="auth-switch" role="tablist" aria-label="Alternar autenticação">
+        <button class="auth-switch-btn active" id="showLoginBtn" type="button" role="tab" aria-selected="true">Entrar</button>
+        <button class="auth-switch-btn" id="showRegisterBtn" type="button" role="tab" aria-selected="false">Criar conta</button>
       </div>
+
+      <h1 id="loginTitle">Bem-vindo</h1>
+      <p class="auth-subtitle" id="authSubtitle">Inicie sessão na sua conta</p>
+
+      <section class="auth-panel" id="loginPanel">
+        <form id="loginForm" class="auth-form" novalidate>
+          <label for="emailInput">Email</label>
+          <input id="emailInput" name="email" type="email" placeholder="seu@email.com" autocomplete="username" required />
+
+          <label for="passwordInput">Palavra-passe</label>
+          <input id="passwordInput" name="password" type="password" placeholder="••••••••" autocomplete="current-password" required />
+
+          <p class="auth-message" id="authMessage" role="status" aria-live="polite"></p>
+
+          <button class="login-submit" type="submit">
+            <svg viewBox="0 0 24 24"><path d="M10 17l5-5-5-5"></path><path d="M15 12H4"></path></svg>
+            Entrar
+          </button>
+        </form>
+      </section>
+
+      <section class="auth-panel" id="registerPanel" hidden aria-labelledby="registerTitle">
+        <form id="registerForm" class="auth-form auth-form-register" novalidate>
+          <label for="registerNameInput">Nome</label>
+          <input id="registerNameInput" name="name" type="text" placeholder="O teu nome" autocomplete="name" required />
+
+          <fieldset class="register-account-type">
+            <legend>Tipo de conta</legend>
+            <label class="register-account-option">
+              <input type="radio" name="registerAccountType" value="lambda" checked />
+              <span>
+                <strong>Conta normal</strong>
+                <small>Para utilizadores que só querem guardar favoritos e usar a plataforma.</small>
+              </span>
+            </label>
+            <label class="register-account-option">
+              <input type="radio" name="registerAccountType" value="organizador" />
+              <span>
+                <strong>Conta de Organizador</strong>
+                <small>Fica pendente de aprovação por um administrador antes de poder entrar.</small>
+              </span>
+            </label>
+          </fieldset>
+
+          <label for="registerEmailInput">Email</label>
+          <input id="registerEmailInput" name="email" type="email" placeholder="novo@email.com" autocomplete="email" required />
+
+          <label for="registerPasswordInput">Palavra-passe</label>
+          <input id="registerPasswordInput" name="password" type="password" placeholder="••••••••" autocomplete="new-password" required />
+
+          <label for="registerConfirmPasswordInput">Confirmar palavra-passe</label>
+          <input id="registerConfirmPasswordInput" name="confirmPassword" type="password" placeholder="••••••••" autocomplete="new-password" required />
+
+          <button class="login-submit" type="submit">
+            <svg viewBox="0 0 24 24"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+            Criar Conta
+          </button>
+        </form>
+
+        <p class="auth-message auth-message-register" id="registerMessage" role="status" aria-live="polite"></p>
+      </section>
+
+      <!-- Contas de teste removidas: a plataforma usa dados reais da base de dados -->
 
       <button class="back-home-btn" id="backHomeBtn" type="button">Voltar à página inicial</button>
     </section>
